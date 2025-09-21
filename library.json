@@ -1,10 +1,7 @@
 {
-    "name": "OFM-InternetWeatherModule",
-    "version": "0.4.0-dev",
-    "dependencies": {
-        "bblanchon/ArduinoJson": "^7.0.4"
-    },
-    "description": "Internet Weather Service",
+    "name": "OFM-Nuki",
+    "version": "0.1.0",
+    "description": "Nuki",
     "homepage": "https://openknx.de",
     "authors": {
         "name": "OpenKNX",
@@ -14,6 +11,16 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/OpenKNX/OFM-InternetWeatherModule"
-    }
+        "url": "https://github.com/OpenKNX/OFM-Nuki"
+    },
+    "dependencies": [
+        {
+            "name": "BleScanner",
+            "version": "https://github.com/I-Connect/BleScanner"
+        },
+        {
+            "name": "NukiBleEsp32",
+            "version": "https://github.com/I-Connect/NukiBleEsp32"
+        }
+    ]
 }

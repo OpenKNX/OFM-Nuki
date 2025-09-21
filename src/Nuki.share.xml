@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_14/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/14" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+	<op:config name="%NUK_NumChannelsDefault%" value="0" />
+	<ManufacturerData>
+		<Manufacturer>
+			<ApplicationPrograms>
+				<ApplicationProgram>
+					<Static>
+						<ParameterTypes>
+
+							<ParameterType Id="%AID%_PT-NUKNumChannels" Name="NUKNumChannels">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="%N%" />
+							</ParameterType>
+							<ParameterType Id="%AID%_PT-NUKChannelType" Name="NUKChannelType">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="2" />
+								<Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
+								<Enumeration Text="Smart Lock" Value="1" Id="%ENID%" />
+								<Enumeration Text="Opener" Value="2" Id="%ENID%" />
+							</ParameterType>
+
+
+						</ParameterTypes>
+						<Parameters>
+							<!-- Base Settings -->
+							<Union SizeInBit="8">
+								<Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
+								<!-- Number of channels -->
+								<Parameter Id="%AID%_UP-%TT%00000" Name="VisibleChannels" ParameterType="%AID%_PT-NUKNumChannels" Offset="0" BitOffset="0" Text="Verfügbare Kanäle" Value="%NUK_NumChannelsDefault%" SuffixText=" von %N%" />
+							</Union>
+							<!-- Add not allowed -->
+							<Parameter Id="%AID%_P-%TT%00001" Name="AddNotAllowed" ParameterType="%AID%_PT-OnOffYesNo" Text="AddNotAllowed" Value="0" Access="None"/>
+						</Parameters>
+						<ParameterRefs>
+							<!-- Number of channels -->
+							<ParameterRef Id="%AID%_UP-%TT%00000_R-%TT%0000001" RefId="%AID%_UP-%TT%00000" />
+							<!-- Add not allowed -->
+							<ParameterRef Id="%AID%_P-%TT%00001_R-%TT%0000101" RefId="%AID%_P-%TT%00001" />
+						</ParameterRefs>
+						<ComObjectTable>
+						</ComObjectTable>
+						<ComObjectRefs>
+						</ComObjectRefs>
+					</Static>
+					<Dynamic>
+						<Channel Name="MainChannel%TT%" Text="Nuki" Number="%PREFIX%" Id="%AID%_CH-%TT%" Icon="lock-outline">
+							<ParameterBlock Id="%AID%_PB-nnn" Name="NukiSettings" Text="Basiseinstellungen" Icon="cog-outline" HelpContext="Empty">
+
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki" UIHint="Headline" />
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="Version: %ModuleVersion%" />
+
+								<ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+
+							</ParameterBlock>
+							<!-- <op:include href="Nuki.templ.xml" xpath="//Dynamic/ChannelIndependentBlock/*" type="template" prefix="NUK" IsInner="true" /> -->
+
+							<!-- More Page -->
+							<choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
+								<when test="&lt;%N%">
+									<ParameterBlock Id="%AID%_PB-nnn" Name="NUKAdditionalChannels" Text="(mehr)" Icon="dots-horizontal">										<!-- HelpContext="Empty" -->
+										<ParameterSeparator Id="%AID%_PS-nnn" Text="Kanalauswahl" UIHint="Headline" />
+										<!-- <ParameterRefRef RefId="%AID%_UP-%TT%00000_R-%TT%0000001" /> -->
+										<!-- HelpContext="BASE-Verfuegbare-Kanaele" IndentLevel="1" /-->
+									</ParameterBlock>
+								</when>
+							</choose>
+						</Channel>
+					</Dynamic>
+				</ApplicationProgram>
+			</ApplicationPrograms>
+			<Baggages>
+				<Baggage TargetPath="" Name="Help_de.zip" Id="%FILE-HELP-de%">
+					<FileInfo TimeInfo="%DATETIME%" />
+				</Baggage>
+				<Baggage TargetPath="" Name="Icons.zip" Id="%FILE-ICONS%">
+					<FileInfo TimeInfo="%DATETIME%" />
+				</Baggage>
+			</Baggages>
+		</Manufacturer>
+	</ManufacturerData>
+</KNX>

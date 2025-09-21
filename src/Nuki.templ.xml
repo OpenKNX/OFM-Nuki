@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_14/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer"
+  xmlns="http://knx.org/xml/project/14" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+  <ManufacturerData>
+    <Manufacturer>
+      <ApplicationPrograms>
+        <ApplicationProgram>
+          <Static>
+            <Parameters>
+              <!-- Kanal Name -->
+              <Parameter Id="%AID%_P-%TT%%CC%000" Name="Channel%C%Name" ParameterType="%AID%_PT-Text40Byte" Text="Bezeichnung" Value="" />
+               
+              <Union SizeInBit="16">
+                <Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
+                <!-- Channel Type -->
+                <Parameter Id="%AID%_UP-%TT%%CC%001" Name="CH%C%ChannelType" ParameterType="%AID%_PT-NUKChannelType" Offset="0" BitOffset="0" Text="Type" Value="0" />
+                <!-- Channel Disabled -->
+                <Parameter Id="%AID%_UP-%TT%%CC%002" Name="CH%C%ChannelDisabled" ParameterType="%AID%_PT-CheckBox" Offset="1" BitOffset="0" Text="Kanal deaktivieren (zu Testzwecken)" Value="0" />
+
+                <!-- 7 Bits free-->
+              </Union>
+
+            </Parameters>
+            <ParameterRefs>
+              <!-- Kanal Name -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_P-%TT%%CC%000" />
+              <!-- Channel Type -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_UP-%TT%%CC%001" />
+              <!-- Channel Disabled -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_UP-%TT%%CC%002" />
+
+            </ParameterRefs>
+            <ComObjectTable>
+            
+            </ComObjectTable>
+            <ComObjectRefs>
+     
+            </ComObjectRefs>
+          </Static>
+          <Dynamic>
+            <ChannelIndependentBlock>
+              <!-- Anzahl der Kanäle -->
+              <choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
+                <when test="&gt;=%C%">
+                  
+                  <choose ParamRefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00101">
+                      <when test="0"><!-- ************ Deaktiviert ************ -->
+                        <!-- <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%FCB" Text="%C% Deaktiviert" Icon="help-box-outline" HelpContext="Empty"> -->
+                          
+                          <!-- <ParameterSeparator Id="%AID%_PS-nnn" Text="Deaktiviert" UIHint="Headline" /> -->
+                          <!-- <ParameterSeparator Id="%AID%_PS-nnn" Text="Dieser Kanal ist deaktiviert. Durch Auswahl eines Types auf der Seite 'Allgemein' wird der Kanal aktiviert." UIHint="Information" /> -->
+
+                        <!-- </ParameterBlock> -->
+                      </when>
+                      <when test="1"><!-- Nuki Lock -->
+      
+                        <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%NUK"   Text="Nuki %C%: {{0: ...}}"   TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Icon="lock-reset" HelpContext="Empty" ShowInComObjectTree="true">
+                          <ParameterSeparator Id="%AID%_PS-nnn" Text="Smart Lock" UIHint="Headline" />
+                          <!-- Kanal Name -->
+                          <ParameterRefRef RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" HelpContext="Empty" />
+                        
+                        </ParameterBlock>
+                      </when>
+                      <when test="2"><!-- Nuki Opener -->
+      
+                        <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%NUKOpener"   Text="Nuki %C%: {{0: ...}}"   TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" Icon="door-closed-lock" HelpContext="Empty" ShowInComObjectTree="true">
+                          <ParameterSeparator Id="%AID%_PS-nnn" Text="Opener" UIHint="Headline" />
+                          <!-- Kanal Name -->
+                          <ParameterRefRef RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00001" HelpContext="Empty" />
+                        
+                        </ParameterBlock>
+                      </when>
+                  </choose>
+                </when>
+              </choose>
+            </ChannelIndependentBlock>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>
