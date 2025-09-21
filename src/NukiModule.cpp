@@ -1,12 +1,9 @@
 #include "NukiModule.h"
 #include "NukiConstants.h"
 
-
 uint32_t deviceId = 2020001;
 std::string deviceName = "frontDoor";
 NukiLock::NukiLock* nukiLock = nullptr;
-
-
 
 void getConfig()
 {
@@ -17,7 +14,7 @@ void getConfig()
     }
     else
     {
-        logDebug("Nuki", "getConfig failed");
+        logError("Nuki", "getConfig failed");
     }
 }
 
@@ -26,13 +23,13 @@ bool NukiModule::keyTurnerState()
     uint8_t result = nukiLock->requestKeyTurnerState(&retrievedKeyTurnerState);
     if (result == 1)
     {
-        logDebug("Nuki", "Bat crit: %d, Bat perc:%d lock state: %d %d:%d:%d",
+        logInfo("Nuki", "Bat crit: %d, Bat perc:%d lock state: %d %d:%d:%d",
                  nukiLock->isBatteryCritical(), nukiLock->getBatteryPerc(), retrievedKeyTurnerState.lockState, retrievedKeyTurnerState.currentTimeHour,
                  retrievedKeyTurnerState.currentTimeMinute, retrievedKeyTurnerState.currentTimeSecond);
     }
     else
     {
-        logDebug("Nuki", "cmd failed: %d", result);
+        logError("Nuki", "cmd failed: %d", result);
     }
     return result;
 }
@@ -56,14 +53,32 @@ const std::string NukiModule::version()
 #endif
 }
 
+class NukiLogger : public Print
+{
+    std::string buffer = "";
+    size_t write(uint8_t c) override
+    {
+        buffer += static_cast<char>(c);
+        if (c == '\n' || buffer.length() == OPENKNX_MAX_LOG_MESSAGE_LENGTH - 20)
+        {
+            logError("Nuki", "%s", buffer.c_str());
+            buffer = "";
+        }
+        return 1;
+    }
+};
+
+NukiLogger nukiLogger = NukiLogger();
+
 void NukiModule::setup(bool configured)
 {
     logDebugP("Start Bluetooth Scanner");
     scanner = new BleScanner::Scanner();
     scanner->initialize();
     nukiLock = new NukiLock::NukiLock(deviceName, deviceId);
-    nukiLock->setEventHandler(nullptr);
-    
+    nukiLock->setEventHandler(&notifyHandler);
+
+    nukiLock->registerLogger(&nukiLogger);
     nukiLock->registerBleScanner(scanner);
     nukiLock->initialize();
 }
@@ -78,18 +93,23 @@ void NukiModule::loop(bool configured)
         {
             if (nukiLock->pairNuki() == Nuki::PairingResult::Success)
             {
-                log_d("paired");
-                nukiLock->setEventHandler(&notifyHandler);
+                logDebugP("Nuki is paired");
+       
+                
 
                 getConfig();
+
+   
             }
         }
         if (notifyHandler.notified)
         {
             notifyHandler.notified = false;
-            if (keyTurnerState())
+            if (nukiLock->isPairedWithLock())
             {
-               
+                if (keyTurnerState())
+                {
+                }
             }
         }
     }
@@ -111,7 +131,22 @@ bool NukiModule::processCommand(const std::string cmd, bool diagnoseKo)
         nukiLock->lockAction(NukiLock::LockAction::Lock);
         return true;
     }
+    if (cmd == "nuki state")
+    {
+        keyTurnerState();
+        return true;
+    }
+    if (cmd == "nuki pair")
+    {
+        // unpair -> this atomatically starts pairing again
+        nukiLock->unPairNuki();
+        return true;
+    }
+    if (cmd == "nuki init")
+    {
+         nukiLock->setAdvertisingMode(Nuki::AdvertisingMode::Normal);
 
+    }
     return false;
 }
 

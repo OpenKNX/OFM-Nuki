@@ -11,6 +11,7 @@ class NukiNotifyHandler : public Nuki::SmartlockEventHandler
   public:
     void notify(Nuki::EventType eventType) override
     {
+        logError("Nuki", "Event: %d", static_cast<int>(eventType));
         notified = true;
     }
 };

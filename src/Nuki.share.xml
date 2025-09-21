@@ -13,10 +13,12 @@
 								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="%N%" />
 							</ParameterType>
 							<ParameterType Id="%AID%_PT-NUKChannelType" Name="NUKChannelType">
-								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="2" />
-								<Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
-								<Enumeration Text="Smart Lock" Value="1" Id="%ENID%" />
-								<Enumeration Text="Opener" Value="2" Id="%ENID%" />
+									<TypeRestriction Base="Value" SizeInBit="8">
+							
+									<Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
+									<Enumeration Text="Smart Lock" Value="1" Id="%ENID%" />
+									<Enumeration Text="Opener" Value="2" Id="%ENID%" />
+									</TypeRestriction>
 							</ParameterType>
 
 
