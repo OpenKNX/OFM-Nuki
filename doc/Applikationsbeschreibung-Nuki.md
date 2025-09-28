@@ -46,7 +46,7 @@ Optionen:
 ### KNX Türsensor 
 
 <!-- DOC -->
-### Tuermodus
+### Türe schließen
 
 <!-- DOC HelpContext="LockAfterTime" -->
 ### Versperren nach Schließen
