@@ -16,11 +16,11 @@
     "dependencies": [
         {
             "name": "BleScanner",
-            "version": "https://github.com/I-Connect/BleScanner"
+            "version": "https://github.com/I-Connect/BleScanner#4dd010e"
         },
         {
             "name": "NukiBleEsp32",
-            "version": "https://github.com/I-Connect/NukiBleEsp32"
+            "version": "https://github.com/I-Connect/NukiBleEsp32#36a3ba2"
         }
     ]
 }

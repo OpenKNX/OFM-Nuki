@@ -1,38 +1,9 @@
 #include "NukiModule.h"
 #include "NukiConstants.h"
+#include "NukiSmartLockChannel.h"
+#include "NukiOpenerChannel.h"
 
-uint32_t deviceId = 2020001;
-std::string deviceName = "frontDoor";
-NukiLock::NukiLock* nukiLock = nullptr;
 
-void getConfig()
-{
-    NukiLock::Config config;
-    if (nukiLock->requestConfig(&config) == 1)
-    {
-        logDebug("Nuki", "Name: %s", config.name);
-    }
-    else
-    {
-        logError("Nuki", "getConfig failed");
-    }
-}
-
-bool NukiModule::keyTurnerState()
-{
-    uint8_t result = nukiLock->requestKeyTurnerState(&retrievedKeyTurnerState);
-    if (result == 1)
-    {
-        logInfo("Nuki", "Bat crit: %d, Bat perc:%d lock state: %d %d:%d:%d",
-                 nukiLock->isBatteryCritical(), nukiLock->getBatteryPerc(), retrievedKeyTurnerState.lockState, retrievedKeyTurnerState.currentTimeHour,
-                 retrievedKeyTurnerState.currentTimeMinute, retrievedKeyTurnerState.currentTimeSecond);
-    }
-    else
-    {
-        logError("Nuki", "cmd failed: %d", result);
-    }
-    return result;
-}
 
 const std::string NukiModule::name()
 {
@@ -45,107 +16,135 @@ void NukiModule::showInformations()
 
 const std::string NukiModule::version()
 {
-#ifdef MODULE_NukiModule_Version
-    return MODULE_NukiModule_Version;
+#ifdef MODULE_Nuki_Version
+    return MODULE_Nuki_Version;
 #else
     // hides the module in the version output on the console, because the firmware version is sufficient.
     return "";
 #endif
 }
 
-class NukiLogger : public Print
-{
-    std::string buffer = "";
-    size_t write(uint8_t c) override
-    {
-        buffer += static_cast<char>(c);
-        if (c == '\n' || buffer.length() == OPENKNX_MAX_LOG_MESSAGE_LENGTH - 20)
-        {
-            logError("Nuki", "%s", buffer.c_str());
-            buffer = "";
-        }
-        return 1;
-    }
-};
+// class NukiLogger : public Print
+// {
+//     std::string buffer = "";
+//     size_t write(uint8_t c) override
+//     {
+//         buffer += static_cast<char>(c);
+//         if (c == '\n' || buffer.length() == OPENKNX_MAX_LOG_MESSAGE_LENGTH - 20)
+//         {
+//             logError("Nuki", "%s", buffer.c_str());
+//             buffer = "";
+//         }
+//         return 1;
+//     }
+// };
 
-NukiLogger nukiLogger = NukiLogger();
+// NukiLogger nukiLogger = NukiLogger();
 
-void NukiModule::setup(bool configured)
+void NukiModule::setup()
 {
+    NUKChannelOwnerModule::initialize(ParamNUK_VisibleChannels);
     logDebugP("Start Bluetooth Scanner");
     scanner = new BleScanner::Scanner();
     scanner->initialize();
-    nukiLock = new NukiLock::NukiLock(deviceName, deviceId);
-    nukiLock->setEventHandler(&notifyHandler);
 
-    nukiLock->registerLogger(&nukiLogger);
-    nukiLock->registerBleScanner(scanner);
-    nukiLock->initialize();
-}
+    NUKChannelOwnerModule::setup();
 
-void NukiModule::loop(bool configured)
+   for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
+    {
+        auto channel = (NukiChannel*) getChannel(i);
+        if (channel == nullptr)
+        {
+            continue;
+        }
+        logDebugP("Initialize channel %d", i);
+        channel->initialize(*scanner);
+    }
+ }
+
+void NukiModule::loop()
 {
     if (scanner != nullptr)
         scanner->update();
-    if (nukiLock != nullptr)
-    {
-        if (!nukiLock->isPairedWithLock())
-        {
-            if (nukiLock->pairNuki() == Nuki::PairingResult::Success)
-            {
-                logDebugP("Nuki is paired");
-       
-                
-
-                getConfig();
-
    
-            }
-        }
-        if (notifyHandler.notified)
-        {
-            notifyHandler.notified = false;
-            if (nukiLock->isPairedWithLock())
-            {
-                if (keyTurnerState())
-                {
-                }
-            }
-        }
+    NUKChannelOwnerModule::loop();
+   
+}
+
+OpenKNX::Channel* NukiModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
+{
+    if (ParamNUK_CHChannelDisabled)
+    {
+        logDebugP("Channel %d is temporarily disabled", _channelIndex);
+        return nullptr;
     }
+    OpenKNX::Channel* channel = nullptr;
+    // <Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
+    // <Enumeration Text="Smart Lock" Value="1" Id="%ENID%" />
+    // <Enumeration Text="Opener" Value="2" Id="%ENID%" />
+    switch (ParamNUK_CHChannelType)
+    {
+        case 0:
+        logInfoP("Channel %d disabled", _channelIndex);
+        break;
+    case 1:
+        logInfoP("Channel %d Smart Lock creating", _channelIndex);
+        channel = new NukiSmartLockChannel(_channelIndex);
+        break;
+    case 2:
+        logInfoP("Channel %d Opener creating", _channelIndex);
+        channel = new NukiOpenerChannel(_channelIndex);
+    default:
+        logErrorP("Channel %d not implemented", _channelIndex);
+        break;
+    }
+    return channel;
 }
 
 void NukiModule::showHelp()
 {
+    openknx.console.printHelpLine("nuki<channel>", "Show informations");
+    openknx.console.printHelpLine("nuki<channel> pair", "Pair Nuki device");
+    openknx.console.printHelpLine("nuki<channel> ?", "Show help of channel");
 }
 
 bool NukiModule::processCommand(const std::string cmd, bool diagnoseKo)
 {
-    if (cmd == "nuki unlock")
+    if (cmd.rfind("nuki", 0) == 0)
     {
-        nukiLock->lockAction(NukiLock::LockAction::Unlock);
+        auto subCmd = cmd.substr(4);
+        if (subCmd.length() == 0)
+        {
+            logInfoP("Nuki Module with %d channels", getNumberOfUsedChannels());
+            return true;
+        }
+        int channelIndex = 0;
+        auto pos = subCmd.find(" ");
+        if (pos != std::string::npos)
+        {
+            channelIndex = std::stoi(subCmd.substr(0, pos));
+            subCmd = subCmd.substr(pos + 1);
+        }
+        else
+        {
+            channelIndex = std::stoi(subCmd);
+            subCmd = "";    
+        }
+        if (channelIndex < 1 || channelIndex > getNumberOfChannels())
+        {
+            logInfoP("Channel %d not available", channelIndex);
+            return true;
+        }
+        auto channel = (NukiChannel*) getChannel(channelIndex - 1);
+        if (channel == nullptr)
+        {
+            logErrorP("Channel %d not found", channelIndex);
+        }
+        else
+        {
+            return channel->processCommand(subCmd, diagnoseKo);
+        }
         return true;
-    }
-    if (cmd == "nuki lock")
-    {
-        nukiLock->lockAction(NukiLock::LockAction::Lock);
-        return true;
-    }
-    if (cmd == "nuki state")
-    {
-        keyTurnerState();
-        return true;
-    }
-    if (cmd == "nuki pair")
-    {
-        // unpair -> this atomatically starts pairing again
-        nukiLock->unPairNuki();
-        return true;
-    }
-    if (cmd == "nuki init")
-    {
-         nukiLock->setAdvertisingMode(Nuki::AdvertisingMode::Normal);
-
     }
     return false;
 }
