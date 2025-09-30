@@ -71,6 +71,60 @@ void NukiModule::loop()
    
 }
 
+bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId, uint8_t length, uint8_t *data, uint8_t *resultData, uint8_t &resultLength)
+{
+    if (!knx.configured()) return false;
+    if (objectIndex != 160) return false;
+    if (propertyId != 9) return false;
+    if (length < 1) return false;
+ 
+    logHexTraceP(data, length);
+    auto cmd = data[0];
+
+    switch (cmd)
+    {
+        case 1:
+        {
+            if (length != 2)
+                return false;
+            auto channelIndex = data[1];
+            if (channelIndex < 0 || channelIndex >= getNumberOfChannels())
+            {
+                logErrorP("Channel %d not available", channelIndex + 1);
+                resultData[0] = 4;
+                resultLength = 1;
+                return true;
+            }
+            auto channel = (NukiChannel*) getChannel(channelIndex);
+            if (channel == nullptr)
+            {
+                logErrorP("Channel %d disabled", channelIndex + 1);
+                resultData[0] = 5;
+                resultLength = 1;
+                return true;
+            }
+            if (channel->pairDevice())
+            {
+                resultData[0] = 2;
+                resultLength = 1;
+                return true;
+            }
+            else
+            {
+                resultData[0] = 3;
+                resultLength = 1;
+                return true;
+            }
+            resultData[0] = 2;
+            resultLength = 1;
+            return true;
+        }
+    }
+    resultData[0] = 1;
+    resultLength = 1;
+    return false;
+}
+
 OpenKNX::Channel* NukiModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
 {
     if (ParamNUK_CHChannelDisabled)

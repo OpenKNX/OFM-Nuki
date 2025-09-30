@@ -107,21 +107,21 @@
 
               <!-- *** Nuki Lock *** -->
               <!-- KO Batteriestatus -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Bit" DatapointType="DPST-5-1" Text="%C%: Batterieladung" FunctionText="{{0:-}} Batterieladung" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Byte" DatapointType="DPST-5-1" Text="%C%: Batterieladung" FunctionText="{{0:-}} Batterieladung" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Auf/Zu -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: Dauerhaft Auf/Zu" FunctionText="{{0:-}} Dauerhaft Auf/Zu" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: Zusperren/Aufsperren" FunctionText="{{0:-}} Zusperren/Aufsperren" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO Auf/Zu Status -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00200" RefId="%AID%_O-%TT%%CC%002" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Unversperrt" FunctionText="{{0:-}} Unversperrt" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00200" RefId="%AID%_O-%TT%%CC%002" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Entsperrt Status" FunctionText="{{0:-}} Entsperrt Status" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Unlatch -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00300" RefId="%AID%_O-%TT%%CC%003" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: Falle ziehen" FunctionText="{{0:-}} Falle ziehen" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO Unlatch Status -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00400" RefId="%AID%_O-%TT%%CC%004" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Falle gezogen" FunctionText="{{0:-}} Falle gezogen" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Nuki Lock`n`Go -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00500" RefId="%AID%_O-%TT%%CC%005" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: Nuki Lock'n'Go" FunctionText="{{0:-}} Nuki Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00500" RefId="%AID%_O-%TT%%CC%005" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: Nuki Lock'n'Go" FunctionText="{{0:-}} Nuki Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO Nuki Lock`n`Go Aktiv -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00600" RefId="%AID%_O-%TT%%CC%006" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Nuki Lock'n'Go Aktiv" FunctionText="{{0:-}} Nuki Lock'n'Go Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO OpenKNX Lock`n`Go -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00700" RefId="%AID%_O-%TT%%CC%007" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: OpenKNX Lock'n'Go" FunctionText="{{0:-}} OpenKNX Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00700" RefId="%AID%_O-%TT%%CC%007" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: OpenKNX Lock'n'Go" FunctionText="{{0:-}} OpenKNX Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO OpenKNX Lock`n`Go Aktiv -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%008_R-%TT%%CC%00800" RefId="%AID%_O-%TT%%CC%008" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: OpenKNX Lock'n'Go Aktiv" FunctionText="{{0:-}} OpenKNX Lock'n'Go Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Verbleibend Sekunden-->
@@ -133,16 +133,16 @@
               <!-- KO Lock Command -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%011_R-%TT%%CC%01100" RefId="%AID%_O-%TT%%CC%011" ObjectSize="1 Byte" DatapointType="DPST-5-10" Text="%C%: Befehl" FunctionText="{{0:-}} Befehl" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO Lock State -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01200" RefId="%AID%_O-%TT%%CC%012" ObjectSize="1 Byte" DatapointType="DPST-1-11" Text="%C%: Status" FunctionText="{{0:-}} Status" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01200" RefId="%AID%_O-%TT%%CC%012" ObjectSize="1 Byte" DatapointType="DPST-5-10" Text="%C%: Sperr-Status" FunctionText="{{0:-}} Sperr-Status" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Door open feedback -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01300" RefId="%AID%_O-%TT%%CC%013" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Tür geöffnet Eingang" FunctionText="{{0:-}} Tür geöffnet Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
           
 
               <!-- *** Nuki Openener *** -->
-              <!-- Batteriestatus -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Bit" DatapointType="DPST-5-1" Text="%C%: Batterieladung" FunctionText="{{0:-}} Batterieladung" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <!-- Batterie leer -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Bit" DatapointType="DPST-5-5" Text="%C%: Batterie leer" FunctionText="{{0:-}} Batterie leer" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- Aufsperren -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Byte" DatapointType="DPST--17" Text="%C%: Aufsperren" FunctionText="{{0:-}} Aufsperren" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: Aufsperren" FunctionText="{{0:-}} Aufsperren" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
        
      
             </ComObjectRefs>
@@ -208,6 +208,8 @@
                             <!-- Channel Disabled -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00200" HelpContext="%DOC%" />
 
+                            <Button Id="%AID%_B-%TT%%CC%000" Text="Mit Smart Lock koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;Module&quot;: %TT%, &quot;channel&quot;:%C%  }" />
+              
                             <!-- KO Batteriestatus -->
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" />
                             <!-- KO Auf/Zu -->
@@ -332,6 +334,8 @@
                             <!-- Channel Disabled -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00200" HelpContext="%DOC%" />
 
+                            <Button Id="%AID%_B-%TT%%CC%002" Text="Mit Opener koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;module&quot;: %TT%, &quot;channel&quot;:%C% }" />
+              
                             <!-- KO Batteriestatus -->
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />
                             <!-- KO Aufsperren -->

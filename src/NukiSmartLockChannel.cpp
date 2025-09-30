@@ -1,22 +1,79 @@
 #include "NukiSmartLockChannel.h"
+// <!-- KO Batteriestatus -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Bit" DatapointType="DPST-5-1" Text="%C%: Batterieladung" FunctionText="{{0:-}} Batterieladung" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Auf/Zu -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: Dauerhaft Auf/Zu" FunctionText="{{0:-}} Dauerhaft Auf/Zu" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+// <!-- KO Auf/Zu Status -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00200" RefId="%AID%_O-%TT%%CC%002" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Unversperrt" FunctionText="{{0:-}} Unversperrt" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Unlatch -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00300" RefId="%AID%_O-%TT%%CC%003" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: Falle ziehen" FunctionText="{{0:-}} Falle ziehen" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+// <!-- KO Unlatch Status -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00400" RefId="%AID%_O-%TT%%CC%004" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Falle gezogen" FunctionText="{{0:-}} Falle gezogen" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Nuki Lock`n`Go -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00500" RefId="%AID%_O-%TT%%CC%005" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: Nuki Lock'n'Go" FunctionText="{{0:-}} Nuki Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+// <!-- KO Nuki Lock`n`Go Aktiv -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00600" RefId="%AID%_O-%TT%%CC%006" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Nuki Lock'n'Go Aktiv" FunctionText="{{0:-}} Nuki Lock'n'Go Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO OpenKNX Lock`n`Go -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00700" RefId="%AID%_O-%TT%%CC%007" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: OpenKNX Lock'n'Go" FunctionText="{{0:-}} OpenKNX Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+// <!-- KO OpenKNX Lock`n`Go Aktiv -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%008_R-%TT%%CC%00800" RefId="%AID%_O-%TT%%CC%008" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: OpenKNX Lock'n'Go Aktiv" FunctionText="{{0:-}} OpenKNX Lock'n'Go Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Verbleibend Sekunden-->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%009_R-%TT%%CC%00900" RefId="%AID%_O-%TT%%CC%009" ObjectSize="1 Byte" DatapointType="DPST-5-10"    Text="%C%: Verbleibend Offen"  FunctionText="{{0:-}} Verbleibend Offen Sekunden" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Verbleibend Minuten -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%009_R-%TT%%CC%00910" RefId="%AID%_O-%TT%%CC%009" ObjectSize="1 Byte" DatapointType="DPST-5-10"    Text="%C%: Verbleibend Offen"  FunctionText="{{0:-}} Verbleibend Offen Minuten" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Status Text -->  
+// <ComObjectRef Id="%AID%_O-%TT%%CC%010_R-%TT%%CC%01000" RefId="%AID%_O-%TT%%CC%010" ObjectSize="14 Bytes" DatapointType="DPST-16-1"    Text="%C%: Status Text"        FunctionText="{{0:-}} Status Text"               TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Lock Command -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%011_R-%TT%%CC%01100" RefId="%AID%_O-%TT%%CC%011" ObjectSize="1 Byte" DatapointType="DPST-5-10" Text="%C%: Befehl" FunctionText="{{0:-}} Befehl" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+// <!-- KO Lock State -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01200" RefId="%AID%_O-%TT%%CC%012" ObjectSize="1 Byte" DatapointType="DPST-1-11" Text="%C%: Status" FunctionText="{{0:-}} Status" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+// <!-- KO Door open feedback -->
+// <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01300" RefId="%AID%_O-%TT%%CC%013" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Tür geöffnet Eingang" FunctionText="{{0:-}} Tür geöffnet Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
+
+
+#define KoNUK_BatteryState KoNUK_CHKO0 
+#define KoNUK_LockUnlock KoNUK_CHKO1 
+#define KoNUK_UnLockState KoNUK_CHKO2
+#define KoNUK_Unlatch KoNUK_CHKO3 
+#define KoNUK_UnlatchState KoNUK_CHKO4 
+#define KoNUK_NukiLocknGo KoNUK_CHKO5
+#define KoNUK_NukiLocknGoState KoNUK_CHKO6 
+#define KoNUK_OpenKNXLocknGo KoNUK_CHKO7 
+#define KoNUK_OpenKNXLocknGoState KoNUK_CHKO8 
+#define KoNUK_RemainingOpenTime KoNUK_CHKO9 
+#define KoNUK_StatusText KoNUK_CHKO10
+#define KoNUK_LockCommand KoNUK_CHKO11
+#define KoNUK_LockState KoNUK_CHK12 
+#define KoNUK_DoorOpenFeedback KoNUK_CHK13
+
+#define NUK_KoBatteryState NUK_KoCHKO0
+#define NUK_KoLockUnlock NUK_KoCHKO1
+#define NUK_KoUnLockState NUK_KoCHKO2
+#define NUK_KoUnlatch NUK_KoCHKO3
+#define NUK_KoUnlatchState NUK_KoCHKO4
+#define NUK_KoNukiLocknGo NUK_KoCHKO5
+#define NUK_KoNukiLocknGoState NUK_KoCHKO6
+#define NUK_KoOpenKNXLocknGo NUK_KoCHKO7
+#define NUK_KoOpenKNXLocknGoState NUK_KoCHKO8
+#define NUK_KoRemainingOpenTime NUK_KoCHKO9
+#define NUK_KoStatusText NUK_KoCHK10
+#define NUK_KoLockCommand NUK_KoCHK11
+#define NUK_KoLockState NUK_KoCHK12
+#define NUK_KoDoorOpenFeedback NUK_KoCHK13
 
 
 NukiSmartLockChannel::NukiSmartLockChannel(uint8_t _channelIndex) : NukiChannel(_channelIndex, "SmartLock"),
-  _smartLock(_name, 2025000 + _channelIndex)
+  _smartLock(_deviceName, 2025000 + _channelIndex)
 {
 
 }
 
-void NukiSmartLockChannel::notify(Nuki::EventType eventType)
-{
-    logDebugP("Event received: %d", (int)eventType);
-    _notified = true;
-}
+
 
 void NukiSmartLockChannel::showInformations()
 {
     logInfoP("Initialized: %s", _initialized ? "yes" : "no");
-    if (_smartLock.isPairedWithLock())
+    if (_paired)
     {
         logInfoP("Nuki Smart Lock is paired");
         logInfoP("Nuki ID: %u", _config.nukiId);
@@ -132,6 +189,26 @@ bool NukiSmartLockChannel::getKeyTurnerState()
         logInfoP("lock state: %d %02d:%02d:%02d Bat crit: %d, Bat perc:%d ",
          _keyTurnerState.lockState, _keyTurnerState.currentTimeHour,
         _keyTurnerState.currentTimeMinute, _keyTurnerState.currentTimeSecond, _smartLock.isBatteryCritical(), _smartLock.getBatteryPerc());
+        KoNUK_BatteryState.valueCompare(_smartLock.getBatteryPerc(), DPT_Scaling);
+        switch (_keyTurnerState.lockState)    
+        {
+            case NukiLock::LockState::Unlocked:
+            case NukiLock::LockState::Unlocking:
+            case NukiLock::LockState::UnlockedLnga:
+                KoNUK_UnLockState.valueCompare((uint8_t) 1, DPT_Switch);
+                KoNUK_UnlatchState.valueCompare((uint8_t) 0, DPT_Switch);
+                break;
+            case NukiLock::LockState::Unlatching:
+            case NukiLock::LockState::Unlatched:
+                KoNUK_UnLockState.valueCompare((uint8_t) 1, DPT_Switch);
+                KoNUK_UnlatchState.valueCompare((uint8_t) 1, DPT_Switch);
+                break;
+            default: // all other
+                KoNUK_UnLockState.valueCompare((uint8_t) 0, DPT_Switch); 
+                KoNUK_UnlatchState.valueCompare((uint8_t) 0, DPT_Switch);
+                break;
+        }
+        KoNUK_LockState.valueCompare((uint8_t) _keyTurnerState.lockState, DPT_Value_1_Ucount);
     }
     else
     {
@@ -148,12 +225,70 @@ void NukiSmartLockChannel::initialize(BleScanner::Scanner& scanner)
     //_smartLock.registerLogger(&nukiLogger);
     _smartLock.registerBleScanner(&scanner);
     _smartLock.initialize();
-
+    _paired = _smartLock.isPairedWithLock();
 }
 
 void NukiSmartLockChannel::setup()
 {
     NukiChannel::setup();
+}
+
+void NukiSmartLockChannel::processInputKo(GroupObject &ko)
+{
+    NukiChannel::processInputKo(ko);
+    switch (NUK_KoCalcIndex(ko.asap()))
+    {
+        case NUK_KoLockUnlock:
+        if (ko.value(DPT_Switch))
+        {
+            logInfoP("Lock command received via KNX");
+            if (_smartLock.lockAction(NukiLock::LockAction::Lock) == Nuki::CmdResult::Success)
+                logInfoP("Lock command sent");
+            else
+                logErrorP("Lock command failed");
+        }
+        else
+        {
+            logInfoP("Unlock command received via KNX");
+            if (_smartLock.lockAction(NukiLock::LockAction::Unlock) == Nuki::CmdResult::Success)
+                logInfoP("Unlock command sent");
+            else
+                logErrorP("Unlock command failed");
+        }
+        break;
+        case NUK_KoUnlatch:
+        if (ko.value(DPT_Trigger))
+        {
+            logInfoP("Unlatch command received via KNX");
+            if (_smartLock.lockAction(NukiLock::LockAction::Unlatch) == Nuki::CmdResult::Success)
+                logInfoP("Unlatch command sent");
+            else
+                logErrorP("Unlatch command failed");
+        }
+        break;
+        case NUK_KoNukiLocknGo:
+        if (ko.value(DPT_Trigger))
+        {
+            logInfoP("Nuki Lock'n'Go command received via KNX");
+            if (_smartLock.lockAction(NukiLock::LockAction::LockNgo) == Nuki::CmdResult::Success)
+                logInfoP("Nuki Lock'n'Go command sent");
+            else
+                logErrorP("Nuki Lock'n'Go command failed");
+        }
+        break;
+        case NUK_KoLockCommand:
+        {
+            uint8_t cmd = ko.value(DPT_Value_1_Ucount);
+            logInfoP("Lock command %d received via KNX", cmd);
+            if (_smartLock.lockAction((NukiLock::LockAction ) cmd) == Nuki::CmdResult::Success)
+                logInfoP("Lock command %d sent", cmd);
+            else
+                logErrorP("Lock command %d failed", cmd);
+            
+        }
+        break;
+    }
+
 }
 
 bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo)
@@ -187,31 +322,34 @@ bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo
 
 bool NukiSmartLockChannel::pairDevice()
 {
+    _smartLock.unPairNuki();
     if (_smartLock.pairNuki() == Nuki::PairingResult::Success)
     {
+        _paired = true;
         logInfoP("Nuki Smart Lock paired");
         return true;
     }
     else
     {
+        _paired = _smartLock.isPairedWithLock();
         logErrorP("Nuki Smart Lock pairing failed");
         return false;
+    }
+}
+
+void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
+{
+    if (_paired)
+    {
+        logDebugP("Notification received, updating keyturner state");
+        _retryKeyTurnStateRequestMs = 0;
     }
 }
 
 void NukiSmartLockChannel::loop()
 {
     NukiChannel::loop();
-    if (_notified)
-    {
-        _notified = false;
-        if (_smartLock.isPairedWithLock())
-        {
-            logDebugP("Notification received, updating keyturner state");
-            _retryKeyTurnStateRequestMs = 0;
-        }
-    }
-    if (!_initialized && _smartLock.isPairedWithLock() && (_retryInitialization == 0 || millis() - _retryInitialization > 600000))
+    if (!_initialized && _paired && (_retryInitialization == 0 || millis() - _retryInitialization > 600000))
     {
         if (!updateConfig())
         {

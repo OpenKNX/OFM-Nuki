@@ -3,12 +3,20 @@
 NukiChannel::NukiChannel(uint8_t channelIndex, const char* type) : Channel()
 {
     _channelIndex = channelIndex;
-    _name = std::to_string(channelIndex + 1) + "-" + type;   
+    _type = type;   
+    _deviceName = type + std::to_string(channelIndex + 1);
 }
 
 const std::string NukiChannel::name()
 {
-    return _name;
+    return _type;
+}
+
+void NukiChannel::notify(Nuki::EventType eventType)
+{
+    logDebugP("Event received: %d", (int)eventType);
+    _eventType = eventType;
+    _notified = true;
 }
 
 void NukiChannel::initialize(BleScanner::Scanner& scanner)
@@ -22,6 +30,11 @@ void NukiChannel::setup()
 
 void NukiChannel::loop()
 {
+    if (_notified)
+    {
+        _notified = false;
+        handleEvent(_eventType);
+    }
 }
 
 void NukiChannel::processInputKo(GroupObject &ko)
