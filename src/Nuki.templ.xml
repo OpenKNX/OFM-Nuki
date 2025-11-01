@@ -28,8 +28,8 @@
                 <Parameter Id="%AID%_UP-%TT%%CC%003" Offset="0" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%OpenKNXLockNgo" Text="OpenKNX Lock`n`Go" Value="0" />
                 <!-- Use Auto Lock -->
                 <Parameter Id="%AID%_UP-%TT%%CC%012" Offset="0" BitOffset="1" ParameterType="%AID%_PT-CheckBox" Name="CH%C%AutoLock" Text="Automatisch versperren" Value="0" />
-                <!-- Alarm -->
-                <Parameter Id="%AID%_UP-%TT%%CC%015" Offset="0" BitOffset="2" ParameterType="%AID%_PT-NUKAlarm" Name="CH%C%Alarm" Text="Alarm" Value="0" />
+                <!-- Burglar Alarm -->
+                <Parameter Id="%AID%_UP-%TT%%CC%015" Offset="0" BitOffset="2" ParameterType="%AID%_PT-NUKAlarm" Name="CH%C%BurglarAlarm" Text="Einbruchalarm" Value="0" />
                 <!-- ^^^ need 2 bits -->
                 <!-- Lock mode -->
                 <Parameter Id="%AID%_UP-%TT%%CC%016" Offset="0" BitOffset="4" ParameterType="%AID%_PT-NUKLock" Name="CH%C%LockMode" Text="Versperren" Value="0" />
@@ -195,7 +195,7 @@
               <!-- KO Door open feedback -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01300" RefId="%AID%_O-%TT%%CC%013" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Tür geöffnet Eingang" FunctionText="{{0:-}} Tür geöffnet Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
               <!-- KO Alarm -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" RefId="%AID%_O-%TT%%CC%014" ObjectSize="1 Bit" DatapointType="DPST-1-5" Text="%C%: Alarm Aktiv" FunctionText="{{0:-}} Alarm Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" RefId="%AID%_O-%TT%%CC%014" ObjectSize="1 Bit" DatapointType="DPST-1-5" Text="%C%: Einbrauchalarm Aktiv" FunctionText="{{0:-}} Einbrauchalarm Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- Night -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" RefId="%AID%_O-%TT%%CC%015" ObjectSize="1 Bit" DatapointType="DPST-1-24" Text="%C%: Nacht Eingang" FunctionText="{{0:-}} Nacht Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
 

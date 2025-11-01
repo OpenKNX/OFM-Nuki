@@ -62,7 +62,7 @@ Optionen:
 ### KNX Türsensor 
 
 <!-- DOC -->
-### Alarm
+### Einbruchalarm
 
 <!-- DOC -->
 ### Versperren
