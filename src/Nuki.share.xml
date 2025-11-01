@@ -60,7 +60,6 @@
 								<TypeTime SizeInBit="16" Unit="Minutes" minInclusive="0" maxInclusive="1440" UIHint="Time_hhmm" />
 							</ParameterType>
 							
-
 							<ParameterType Id="%AID%_PT-NUKAlarm" Name="NUKAlarm">
 								<TypeRestriction Base="Value" SizeInBit="2">
 									<Enumeration Text="nicht aktiv" Value="0" Id="%ENID%" />

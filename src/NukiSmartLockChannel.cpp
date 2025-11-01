@@ -288,16 +288,30 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
         }
         break;
         case NUK_KoOpenKNXLocknGo:
-        if (ko.value(DPT_Trigger))
         {
-            logInfoP("OpenKNX Lock'n'Go command received via KNX");
-            if (_smartLock.lockAction(NukiLock::LockAction:;Unlo) == Nuki::CmdResult::Success)
-                logInfoP("OpenKNX Lock'n'Go command sent");
-            else
-                logErrorP("OpenKNX Lock'n'Go command failed");
+            if (ko.value(DPT_Trigger))
+            {
+                logInfoP("OpenKNX Lock'n'Go command received via KNX");
+                // <Enumeration Text="Entsperren" Value="0" Id="%ENID%" />
+                // <Enumeration Text="Lasche ziehen" Value="1" Id="%ENID%" />
+                if (ParamNUK_CHLockNGoMode)
+                {
+                    if (_smartLock.lockAction(NukiLock::LockAction::Unlock) == Nuki::CmdResult::Success)
+                        logInfoP("OpenKNX Lock'n'Go (unlock) command sent");
+                    else
+                        logErrorP("OpenKNX Lock'n'Go (unlock) command failed");
+                }
+                else
+                {
+                    if (_smartLock.lockAction(NukiLock::LockAction::Unlatch) == Nuki::CmdResult::Success)
+                        logInfoP("OpenKNX Lock'n'Go (unlatch) command sent");
+                    else
+                        logErrorP("OpenKNX Lock'n'Go (unlatch) command failed");
+                }
+                _openKNXLockAndGoStartTime = max(1UL, millis());
+            }
         }
     }
-
 }
 
 bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo)
@@ -382,5 +396,15 @@ void NukiSmartLockChannel::loop()
                 _retryKeyTurnStateRequestMs = 60000; // 1 minute
             }
         }
+    }
+    auto now = max(1UL, millis());
+    if (_openKNXLockAndGoStartTime != 0 && now - _openKNXLockAndGoStartTime >= ParamNUK_CHLockNGoDelayTimeMS)
+    {
+        logInfoP("OpenKNX Lock'n'Go period ended");
+        _openKNXLockAndGoStartTime = 0;
+        if (_smartLock.lockAction(NukiLock::LockAction::Lock) == Nuki::CmdResult::Success)
+            logInfoP("OpenKNX Lock'n'Go (lock) command sent");
+        else
+            logErrorP("OpenKNX Lock'n'Go (lock) command failed");
     }
 }

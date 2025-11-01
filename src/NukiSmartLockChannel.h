@@ -12,6 +12,7 @@ class NukiSmartLockChannel : public NukiChannel
     NukiLock::Config _config = {0};
     bool _paired = false;
     NukiLock::KeyTurnerState _keyTurnerState;
+    unsigned long _openKNXLockAndGoStartTime = 0;
  
     bool updateConfig();
     bool getKeyTurnerState();
