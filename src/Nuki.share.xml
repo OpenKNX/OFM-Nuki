@@ -21,8 +21,9 @@
 							</ParameterType>
 							<ParameterType Id="%AID%_PT-NUKDoorMode" Name="NUKDoorMode">
 								<TypeRestriction Base="Value" SizeInBit="4">
-									<Enumeration Text="Wiederversperrzeit Fortsetzen" Value="0" Id="%ENID%" />
-									<Enumeration Text="Schließen nach" Value="1" Id="%ENID%" />
+									<Enumeration Text="Versperrwartezeit fortsetzen" Value="0" Id="%ENID%" />
+									<Enumeration Text="Versperrwartezeit neu starten" Value="1" Id="%ENID%" />
+									<Enumeration Text="Versperren nach Wartezeit" Value="2" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
 							<ParameterType Id="%AID%_PT-NUKLockNGoCountDownKo" Name="NUKLockNGoCountDownKo">
@@ -30,6 +31,41 @@
 									<Enumeration Text="Keines" Value="0" Id="%ENID%" />
 									<Enumeration Text="Sekunden" Value="1" Id="%ENID%" />
 									<Enumeration Text="Minuten" Value="2" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="%AID%_PT-NUKLockNGoMode" Name="NUKLockNGoMode">
+								<TypeRestriction Base="Value" SizeInBit="1">
+									<Enumeration Text="Entsperren" Value="0" Id="%ENID%" />
+									<Enumeration Text="Lasche ziehen" Value="1" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
+							<ParameterType Id="%AID%_PT-NUKLock" Name="NUKAlarm">
+								<TypeRestriction Base="Value" SizeInBit="1">
+									<Enumeration Text="einfach" Value="0" Id="%ENID%" />
+									<Enumeration Text="2-fach" Value="1" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
+							<ParameterType Id="%AID%_PT-NUKNight" Name="NUKNight">
+								<TypeRestriction Base="Value" SizeInBit="4">
+									<Enumeration Text="Zeitfenster" Value="0" Id="%ENID%" />
+									<Enumeration Text="Objekt" Value="1" Id="%ENID%" />
+									<Enumeration Text="Objekt UND Zeitfenster" Value="2" Id="%ENID%" />
+									<Enumeration Text="Objekt ODER Zeitfenster" Value="3" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
+							<ParameterType Id="%AID%_PT-NUKTime" Name="NUKTime">
+								<TypeTime SizeInBit="16" Unit="Minutes" minInclusive="0" maxInclusive="1440" UIHint="Time_hhmm" />
+							</ParameterType>
+							
+
+							<ParameterType Id="%AID%_PT-NUKAlarm" Name="NUKAlarm">
+								<TypeRestriction Base="Value" SizeInBit="2">
+									<Enumeration Text="nicht aktiv" Value="0" Id="%ENID%" />
+									<Enumeration Text="wenn Tür offen und Nuki versperrt" Value="1" Id="%ENID%" />
+									<Enumeration Text="wenn Tür offen und Nuki manuell geöffnet" Value="2" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
 							

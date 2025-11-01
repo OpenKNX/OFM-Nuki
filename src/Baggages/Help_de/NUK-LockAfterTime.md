@@ -1,2 +1,2 @@
-﻿### Versperren nach Schließen
+﻿### Versperren nach schließen
 

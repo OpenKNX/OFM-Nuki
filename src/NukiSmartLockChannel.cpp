@@ -287,6 +287,15 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
             
         }
         break;
+        case NUK_KoOpenKNXLocknGo:
+        if (ko.value(DPT_Trigger))
+        {
+            logInfoP("OpenKNX Lock'n'Go command received via KNX");
+            if (_smartLock.lockAction(NukiLock::LockAction:;Unlo) == Nuki::CmdResult::Success)
+                logInfoP("OpenKNX Lock'n'Go command sent");
+            else
+                logErrorP("OpenKNX Lock'n'Go command failed");
+        }
     }
 
 }

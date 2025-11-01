@@ -37,8 +37,24 @@ Optionen:
 ### Lock'n'Go-Zeit
 
 <!-- DOC HelpContext="LocknGo-Zeit-Einheit"-->
-### Lock'n'Go-Zeit-Eimheit
+### Lock'n'Go-Zeit Eimheit
 
+<!-- DOC -->
+### Automatisch versperren Zeit
+
+<!-- DOC -->
+### Automatisch versperren Zeit Einheit
+
+<!-- DOC HelpContext="WaitTime"-->
+### Wartezeit
+
+<!-- DOC -->
+### Wartezeit
+
+<!-- DOC -->
+### Wartezeit Einheit
+
+<
 <!-- DOC -->
 ### Objekt für Versperr-Count-Down
 
@@ -46,9 +62,42 @@ Optionen:
 ### KNX Türsensor 
 
 <!-- DOC -->
+### Alarm
+
+<!-- DOC -->
+### Versperren
+
+<!-- DOC -->
+### Versperren in der Nacht anders
+
+<!-- DOC -->
+### Nacht Auswahl
+
+<!-- DOC -->
+### Nacht Beginn
+
+<!-- DOC -->
+### Nacht Ende
+
+
+<!-- DOC -->
 ### Türe schließen
 
+
+<!-- DOC HelpContext="LockAfter" -->
+### Wartezeit
+
+
 <!-- DOC HelpContext="LockAfterTime" -->
-### Versperren nach Schließen
+### Versperren nach schließen
+
+<!-- DOC -->
+### Modus
+
+<!-- DOC -->
+### Automatisch versperren
+
+<!-- DOC -->
+### Nach Tür schliessen
 
 <!-- DOCEND -->

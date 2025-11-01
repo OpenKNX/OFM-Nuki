@@ -1,2 +1,2 @@
-﻿### Lock'n'Go-Zeit-Eimheit
+﻿### Lock'n'Go-Zeit Eimheit
 
