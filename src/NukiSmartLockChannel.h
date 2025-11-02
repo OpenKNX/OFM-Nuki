@@ -16,11 +16,16 @@ class NukiSmartLockChannel : public NukiChannel
     unsigned long _lockTimerDuration = 0;
     unsigned long _lockTimerWaitTimeMs = 0;
     bool _doorOpen = false;
-    bool _lockAndGoDoorOpen = false;
+    bool _doorOpenBreak = false;
+    bool _nukiLockNgoActive = false;
 
  
+    NukiLock::LockAction getCurrentValidConfiguredLockAction();
+    bool isNightTimeWindow();
+    bool isNight();
     bool updateConfig();
     bool updateKeyTurnerState();
+    const char* lockStateToString(NukiLock::LockState state);
     bool _initialized = false;
   
 public:
@@ -28,6 +33,7 @@ public:
     virtual void initialize(BleScanner::Scanner& scanner) override;
     virtual void setup() override;
     virtual void loop() override;
+    void updateStates(unsigned long now);
     virtual bool pairDevice() override;
     virtual void processInputKo(GroupObject &ko) override;
     virtual bool processCommand(const std::string cmd, bool diagnoseKo) override;

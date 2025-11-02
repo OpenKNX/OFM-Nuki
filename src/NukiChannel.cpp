@@ -46,6 +46,7 @@ bool NukiChannel::processCommand(const std::string cmd, bool diagnoseKo)
     if (cmd == "")
     {
         showInformations();
+        return true;
     }
     if (cmd == "pair")
     {

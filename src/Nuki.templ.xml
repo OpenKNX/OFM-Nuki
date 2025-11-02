@@ -36,7 +36,7 @@
                 <!-- Lock mode night enabled -->
                 <Parameter Id="%AID%_UP-%TT%%CC%017" Offset="0" BitOffset="5" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockModeNightEnable" Text="Versperren in der Nacht anders" Value="0" />
                 <!-- Lock mode night -->
-                <Parameter Id="%AID%_UP-%TT%%CC%018" Offset="0" BitOffset="6" ParameterType="%AID%_PT-NUKLock" Name="CH%C%LockModeNight" Text="Versperren" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%018" Offset="0" BitOffset="6" ParameterType="%AID%_PT-NUKLock" Name="CH%C%LockModeNight" Text="Versperren" Value="1" />
                 <!-- 1 Bit free -->
                 <!-- Night selection -->
                 <Parameter Id="%AID%_UP-%TT%%CC%019" Offset="1" BitOffset="0" ParameterType="%AID%_PT-NUKNight" Name="CH%C%NightSelection" Text="Nacht Auswahl" Value="0" />
@@ -194,9 +194,9 @@
               <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01200" RefId="%AID%_O-%TT%%CC%012" ObjectSize="1 Byte" DatapointType="DPST-5-10" Text="%C%: Sperr-Status" FunctionText="{{0:-}} Sperr-Status" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Door open feedback -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01300" RefId="%AID%_O-%TT%%CC%013" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Tür geöffnet Eingang" FunctionText="{{0:-}} Tür geöffnet Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
-              <!-- KO Alarm -->
+              <!-- KO Burglar Alarm -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" RefId="%AID%_O-%TT%%CC%014" ObjectSize="1 Bit" DatapointType="DPST-1-5" Text="%C%: Einbrauchalarm Aktiv" FunctionText="{{0:-}} Einbrauchalarm Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
-              <!-- Night -->
+              <!-- KO Night -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" RefId="%AID%_O-%TT%%CC%015" ObjectSize="1 Bit" DatapointType="DPST-1-24" Text="%C%: Nacht Eingang" FunctionText="{{0:-}} Nacht Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
 
               <!-- *** Nuki Openener *** -->
