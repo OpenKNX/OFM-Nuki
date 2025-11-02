@@ -516,8 +516,9 @@ bool NukiSmartLockChannel::isNightTimeWindow()
     auto now = openknx.time.getLocalTime();
     uint16_t currentMinutes = now.hour * 60 + now.minute;
     uint16_t startMinutes = knx.paramWord(NUK_ParamCalcIndex(NUK_CHNightStart));
-    uint16_t endMinutes = knx.paramWord(NUK_ParamCalcIndex(NUK_CHNightEnd));;
-    return (currentMinutes >= startMinutes && currentMinutes < endMinutes);
+    uint16_t endMinutes = knx.paramWord(NUK_ParamCalcIndex(NUK_CHNightEnd));
+    bool isNightTimeWindow = (currentMinutes >= startMinutes || currentMinutes < endMinutes);
+    return isNightTimeWindow;
 }
 
 bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo)
