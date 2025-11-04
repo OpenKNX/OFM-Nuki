@@ -71,6 +71,15 @@ Optionen:
 ### Versperren in der Nacht anders
 
 <!-- DOC -->
+### Nacht
+
+<!-- DOC -->
+### Aktion bei Nachtanfang
+
+<!-- DOC -->
+### Aktion bei Nachtende
+
+<!-- DOC -->
 ### Nacht Auswahl
 
 <!-- DOC -->

@@ -3,6 +3,10 @@
 #include "ChannelOwnerModule.h"
 #include "BleScanner.h"
 
+#if !defined(OPENKNX_DUALCORE)
+#error "NukiModule requires OPENKNX_DUALCORE to be enabled"
+#endif
+
 class NukiModule : public NUKChannelOwnerModule
 {
   private:
@@ -19,7 +23,6 @@ class NukiModule : public NUKChannelOwnerModule
     void showHelp() override;
     bool processCommand(const std::string cmd, bool diagnoseKo) override;
     bool processFunctionProperty(uint8_t objectIndex, uint8_t propertyId, uint8_t length, uint8_t *data, uint8_t *resultData, uint8_t &resultLength) override;
-
  
 };
 

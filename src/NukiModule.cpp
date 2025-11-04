@@ -176,12 +176,28 @@ bool NukiModule::processCommand(const std::string cmd, bool diagnoseKo)
         auto pos = subCmd.find(" ");
         if (pos != std::string::npos)
         {
-            channelIndex = std::stoi(subCmd.substr(0, pos));
+            try
+            {
+                channelIndex = std::stoi(subCmd.substr(0, pos));
+            }
+            catch (...)
+            {
+                logErrorP("Invalid channel index %s", subCmd.substr(0, pos).c_str());
+                return true;
+            }
             subCmd = subCmd.substr(pos + 1);
         }
         else
         {
-            channelIndex = std::stoi(subCmd);
+            try
+            {
+                channelIndex = std::stoi(subCmd);
+            }
+            catch (...)
+            {
+                logErrorP("Invalid channel index %s", subCmd.c_str());
+                return true;
+            }
             subCmd = "";    
         }
         if (channelIndex < 1 || channelIndex > getNumberOfChannels())

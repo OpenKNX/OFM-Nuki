@@ -22,7 +22,7 @@
               </Union>
 
               <!-- *** Nuki Lock *** -->
-              <Union SizeInBit="112">
+              <Union SizeInBit="136">
                 <Memory CodeSegment="%MID%" Offset="1" BitOffset="0" />
                 <!-- Use OpenKNX lock'n'go -->
                 <Parameter Id="%AID%_UP-%TT%%CC%003" Offset="0" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%OpenKNXLockNgo" Text="OpenKNX Lock`n`Go" Value="0" />
@@ -33,15 +33,16 @@
                 <!-- ^^^ need 2 bits -->
                 <!-- Lock mode -->
                 <Parameter Id="%AID%_UP-%TT%%CC%016" Offset="0" BitOffset="4" ParameterType="%AID%_PT-NUKLock" Name="CH%C%LockMode" Text="Versperren" Value="0" />
-                <!-- Lock mode night enabled -->
+                <!-- Lock settings night different -->
                 <Parameter Id="%AID%_UP-%TT%%CC%017" Offset="0" BitOffset="5" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockModeNightEnable" Text="Versperren in der Nacht anders" Value="0" />
                 <!-- Lock mode night -->
                 <Parameter Id="%AID%_UP-%TT%%CC%018" Offset="0" BitOffset="6" ParameterType="%AID%_PT-NUKLock" Name="CH%C%LockModeNight" Text="Versperren" Value="1" />
-                <!-- 1 Bit free -->
+                <!-- Use Auto Lock night -->
+                <Parameter Id="%AID%_UP-%TT%%CC%024" Offset="0" BitOffset="7" ParameterType="%AID%_PT-CheckBox" Name="CH%C%AutoLockNight" Text="Automatisch versperren" Value="1" />
+            
+
                 <!-- Night selection -->
-                <Parameter Id="%AID%_UP-%TT%%CC%019" Offset="1" BitOffset="0" ParameterType="%AID%_PT-NUKNight" Name="CH%C%NightSelection" Text="Nacht Auswahl" Value="0" />
-                <!-- ^^^ need 4 bits -->
-                <!-- 4 bits free -->
+                <Parameter Id="%AID%_UP-%TT%%CC%019" Offset="1" BitOffset="0" ParameterType="%AID%_PT-NUKNight" Name="CH%C%NightSelection" Text="Nacht" Value="0" />
                 <!-- Night time start -->
                 <Parameter Id="%AID%_UP-%TT%%CC%020" Offset="2" BitOffset="0" ParameterType="%AID%_PT-NUKTime" Name="CH%C%NightStart" Text="Nacht Beginn" Value="1200" />
                 <!-- ^^^ need 2 bytes -->
@@ -60,23 +61,34 @@
                 <Parameter Id="%AID%_UP-%TT%%CC%007" Offset="8" BitOffset="4" ParameterType="%AID%_PT-NUKDoorMode" Name="CH%C%DoorMode" Text="Nach Tür schließen" Value="0" />
 
                 <!-- Auto lock DelayBase-->
-                <Parameter Id="%AID%_UP-%TT%%CC%008" Offset="9" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
+                <Parameter Id="%AID%_UP-%TT%%CC%025" Offset="9" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
                 <!-- Auto lock DelayTime -->
-                <Parameter Id="%AID%_UP-%TT%%CC%009" Offset="9" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockDelayTime" Text="Automatisch versperren Zeit" Value="2" />
+                <Parameter Id="%AID%_UP-%TT%%CC%026" Offset="9" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockDelayTime" Text="Automatisch versperren Zeit" Value="2" />
                 <!-- ^^^ need 2 bytes -->
+
+                <!-- Auto lock night DelayBase-->
+                <Parameter Id="%AID%_UP-%TT%%CC%008" Offset="11" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockNightDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
+                <!-- Auto lock night DelayTime -->
+                <Parameter Id="%AID%_UP-%TT%%CC%009" Offset="11" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockNightDelayTime" Text="Automatisch versperren Zeit" Value="2" />
+                <!-- ^^^ need 2 bytes -->
+             
+
                 <!-- Count Down KO type-->
-                <Parameter Id="%AID%_UP-%TT%%CC%010" Offset="11" BitOffset="0" ParameterType="%AID%_PT-NUKLockNGoCountDownKo" Name="CH%C%CountDownKoType" Text="Objekt für Versperr-Count-Down" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%010" Offset="13" BitOffset="0" ParameterType="%AID%_PT-NUKLockNGoCountDownKo" Name="CH%C%CountDownKoType" Text="Objekt für Versperr-Count-Down" Value="0" />
                 <!-- Lock'n'Go Mode -->
-                <Parameter Id="%AID%_UP-%TT%%CC%011" Offset="11" BitOffset="4" ParameterType="%AID%_PT-NUKLockNGoMode" Name="CH%C%LockNGoMode" Text="Modus" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%011" Offset="13" BitOffset="4" ParameterType="%AID%_PT-NUKLockNGoMode" Name="CH%C%LockNGoMode" Text="Modus" Value="0" />
                 <!-- Wait time DelayBase-->
-                <Parameter Id="%AID%_UP-%TT%%CC%013" Offset="12" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%WaitTimeDelayBase" Text="Wartezeit Einheit" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%013" Offset="14" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%WaitTimeDelayBase" Text="Wartezeit Einheit" Value="0" />
                 <!-- Wait time DelayTime -->
-                <Parameter Id="%AID%_UP-%TT%%CC%014" Offset="12" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%WaitTimeDelayTime" Text="Wartezeit" Value="5" />
+                <Parameter Id="%AID%_UP-%TT%%CC%014" Offset="14" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%WaitTimeDelayTime" Text="Wartezeit" Value="5" />
                 <!-- ^^^ need 2 bytes -->
-           
+                <!-- Start night action-->
+                <Parameter Id="%AID%_UP-%TT%%CC%022" Offset="16" BitOffset="0" ParameterType="%AID%_PT-NUKNightAction" Name="CH%C%NightStartAction" Text="Aktion bei Nachtanfang" Value="0" />
+                <!-- End night action-->
+                <Parameter Id="%AID%_UP-%TT%%CC%023" Offset="16" BitOffset="4" ParameterType="%AID%_PT-NUKNightAction" Name="CH%C%NightEndAction" Text="Aktion bei Nachtende" Value="0" />
               </Union>
 
-              <!-- Next parameter Id="%AID%_UP-%TT%%CC%022"-->
+              <!-- Next parameter Id="%AID%_UP-%TT%%CC%027"-->
 
             </Parameters>
             <ParameterRefs>
@@ -115,7 +127,7 @@
               <ParameterRef Id="%AID%_UP-%TT%%CC%015_R-%TT%%CC%01500" RefId="%AID%_UP-%TT%%CC%015" />
               <!-- Lock mode -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%016_R-%TT%%CC%01600" RefId="%AID%_UP-%TT%%CC%016" />
-              <!-- Lock mode night enabled -->
+              <!-- Lock settings night different -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%017_R-%TT%%CC%01700" RefId="%AID%_UP-%TT%%CC%017" />
               <!-- Lock mode night -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%018_R-%TT%%CC%01800" RefId="%AID%_UP-%TT%%CC%018" />
@@ -125,6 +137,16 @@
               <ParameterRef Id="%AID%_UP-%TT%%CC%020_R-%TT%%CC%02000" RefId="%AID%_UP-%TT%%CC%020" />
               <!-- Night time end -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%021_R-%TT%%CC%02100" RefId="%AID%_UP-%TT%%CC%021" />
+              <!-- Start night action-->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%022_R-%TT%%CC%02200" RefId="%AID%_UP-%TT%%CC%022" />
+              <!-- End night action-->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%023_R-%TT%%CC%02300" RefId="%AID%_UP-%TT%%CC%023" />
+              <!-- Use Auto Lock night -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%024_R-%TT%%CC%02400" RefId="%AID%_UP-%TT%%CC%024" />
+              <!-- Auto lock night DelayBase-->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%025_R-%TT%%CC%02500" RefId="%AID%_UP-%TT%%CC%025" />
+              <!-- Auto lock night DelayTime -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%026_R-%TT%%CC%02600" RefId="%AID%_UP-%TT%%CC%026" />
               
             </ParameterRefs>
             <ComObjectTable>
@@ -176,8 +198,8 @@
               <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00400" RefId="%AID%_O-%TT%%CC%004" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Falle gezogen" FunctionText="{{0:-}} Falle gezogen" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Nuki Lock`n`Go -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00500" RefId="%AID%_O-%TT%%CC%005" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: Nuki Lock'n'Go" FunctionText="{{0:-}} Nuki Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
-              <!-- KO Nuki Lock`n`Go Aktiv -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00600" RefId="%AID%_O-%TT%%CC%006" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Nuki Lock'n'Go Aktiv" FunctionText="{{0:-}} Nuki Lock'n'Go Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <!-- KO Motor Blocked-->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00600" RefId="%AID%_O-%TT%%CC%006" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="%C%: Motor blockiert" FunctionText="{{0:-}} Motor blockiert" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO OpenKNX Lock`n`Go -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00700" RefId="%AID%_O-%TT%%CC%007" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: OpenKNX Lock'n'Go" FunctionText="{{0:-}} OpenKNX Lock'n'Go" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO OpenKNX Lock`n`Go Aktiv -->
@@ -195,7 +217,7 @@
               <!-- KO Door open feedback -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01300" RefId="%AID%_O-%TT%%CC%013" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Tür geöffnet Eingang" FunctionText="{{0:-}} Tür geöffnet Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
               <!-- KO Burglar Alarm -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" RefId="%AID%_O-%TT%%CC%014" ObjectSize="1 Bit" DatapointType="DPST-1-5" Text="%C%: Einbrauchalarm Aktiv" FunctionText="{{0:-}} Einbrauchalarm Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" RefId="%AID%_O-%TT%%CC%014" ObjectSize="1 Bit" DatapointType="DPST-1-5" Text="%C%: Einbruchsalarm Aktiv" FunctionText="{{0:-}} Einbruchsalarm Aktiv" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Night -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" RefId="%AID%_O-%TT%%CC%015" ObjectSize="1 Bit" DatapointType="DPST-1-24" Text="%C%: Nacht Eingang" FunctionText="{{0:-}} Nacht Eingang" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
 
@@ -262,12 +284,14 @@
                         <when test="1">
                           <!-- *** Nuki Lock *** -->
 
-                          <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%NUK"   Text="Smart Lock %C%: {{0: ...}}"   TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" Icon="lock-reset" HelpContext="Empty" ShowInComObjectTree="true">
+                          <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%NUK"   Text="%C% Smart Lock: {{0: ...}}"   TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" Icon="lock-reset" HelpContext="Empty" ShowInComObjectTree="true">
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Smart Lock" UIHint="Headline" />
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
 
 
-                            <Button Id="%AID%_B-%TT%%CC%000" Text="Mit Smart Lock koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;Module&quot;: %TT%, &quot;channel&quot;:%C%  }" />
-              
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Um mit dem Nuki Smart Lock koppeln zu können, muss die KNX Adresse programmiert sein. Danach am Smart Lock die Taste für ca. 10 Sekunden drücken bis der Ring leuchtet. Durch Betätigung des Buttons 'Mit Smart Lock koppeln' wird die Koppelung durchgeführt." UIHint="Information" />
+                            <Button Id="%AID%_B-%TT%%CC%000" Text="Mit Smart Lock koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;Module&quot;: %TT%, &quot;channel&quot;:%C%  }" />              
+                     
                             <!-- Channel Name -->         
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" HelpContext="%DOC%" />
                             <!-- Channel Disabled -->
@@ -285,11 +309,17 @@
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%004_R-%TT%%CC%00400" />
                             <!-- KO Nuki Lock`n`Go -->
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%005_R-%TT%%CC%00500" />
-                            <!-- KO Nuki Lock`n`Go Aktiv -->
+                            <!-- KO Motor Blocked-->
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%006_R-%TT%%CC%00600" />
 
                          
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Versperren" UIHint="Headline" />
+
+                            <!-- Count Down KO type -->
+                            <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000" HelpContext="%DOC%" />
+                          
+
                             <!-- Use Auto Lock -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%012_R-%TT%%CC%01200" HelpContext="%DOC%" />
                             <choose ParamRefId="%AID%_UP-%TT%%CC%012_R-%TT%%CC%01200">
@@ -305,7 +335,7 @@
                                     <Column Id="%AID%_PB-nnn_C-2" Name="Col3" Width="15%" />
                                     <Column Id="%AID%_PB-nnn_C-3" Name="Col4" Width="25%" />
                                   </Columns>
-                                  <ParameterSeparator Id="%AID%_PS-nnn" Text="  Automatisch versperren nach" Cell="1,1" />
+                                  <ParameterSeparator Id="%AID%_PS-nnn" Text="    nach" Cell="1,1" />
                               
                                   <!-- Auto lock DelayTime -->
                                   <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%009_R-%TT%%CC%00900" Cell="1,2" HelpContext="%DOC%" />
@@ -316,35 +346,60 @@
                             </choose>
 
                             
-                   
-                            <!-- Count Down KO type -->
-                            <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000" HelpContext="%DOC%" />
                              
                             <!-- lock mode -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%016_R-%TT%%CC%01600" HelpContext="%DOC%" />
-                            <!-- Lock mode night enabled -->
+                            
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+                            <!-- Lock settings night different -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%017_R-%TT%%CC%01700" HelpContext="%DOC%" />
                             <choose ParamRefId="%AID%_UP-%TT%%CC%017_R-%TT%%CC%01700">
                               <when test="1">
-                                <!-- Lock mode night enabled is active -->
-                                <!-- Lock mode night -->
-                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%018_R-%TT%%CC%01800" HelpContext="%DOC%" />
+                                <!-- Lock settings night different is active -->
+                               
                                 <!-- Night selection -->
-                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%019_R-%TT%%CC%01900" HelpContext="%DOC%" />
                                 <choose ParamRefId="%AID%_UP-%TT%%CC%019_R-%TT%%CC%01900">
-                                  <when test="0 2 3">
-                                    <!-- time window selected -->
-                                    <!-- Night time start -->
-                                    <ParameterRefRef IndentLevel="3" RefId="%AID%_UP-%TT%%CC%020_R-%TT%%CC%02000" HelpContext="%DOC%" />
-                                    <!-- Night time end -->
-                                    <ParameterRefRef IndentLevel="3" RefId="%AID%_UP-%TT%%CC%021_R-%TT%%CC%02100" HelpContext="%DOC%" />  
+                                  <when test="0">
+                                    	<ParameterSeparator Id="%AID%_PS-nnn" Text="Im Abschnitt 'Nacht' muss eine Auswahl getroffen werden um diese Einstellung Nutzen zu können." UIHint="Error" />
+                                  </when>
+                                  <when test="!=0" >
+
+                                    <!-- Use Auto Lock night -->
+                                    <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%024_R-%TT%%CC%02400" HelpContext="%DOC%" />
+                                    <choose ParamRefId="%AID%_UP-%TT%%CC%024_R-%TT%%CC%02400">
+                                      <when test="1">
+                                        <!-- Use Auto Lock night is active -->
+                                        <!-- Lock after -->  
+                                        <ParameterBlock Id="%AID%_PB-nnn" Name="f%C%LockAfterTimeNight" Inline="true" Layout="Grid" HelpContext="NUK-LockAfterTime">
+                                          <Rows>
+                                            <Row Id="%AID%_PB-nnn_R-1" Name="Row1" />
+                                          </Rows>
+                                          <Columns>
+                                            <Column Id="%AID%_PB-nnn_C-1" Name="Col2" Width="45%" />
+                                            <Column Id="%AID%_PB-nnn_C-2" Name="Col3" Width="15%" />
+                                            <Column Id="%AID%_PB-nnn_C-3" Name="Col4" Width="25%" />
+                                          </Columns>
+                                          <ParameterSeparator Id="%AID%_PS-nnn" Text="    nach" Cell="1,1" />
+                                      
+                                          <!-- Auto lock DelayTime night -->
+                                          <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%026_R-%TT%%CC%02600" Cell="1,2" HelpContext="%DOC%" />
+                                          <!-- Auto lock DelayBase night -->
+                                          <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%025_R-%TT%%CC%02500" Cell="1,3" HelpContext="%DOC%" />
+                                        </ParameterBlock>
+                                      </when>
+                                    </choose>
+                                    
+                                    
+                                    <!-- Lock mode night -->
+                                    <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%018_R-%TT%%CC%01800" HelpContext="%DOC%" />
                                   </when>
                                 </choose>
                               </when>
                             </choose>
 
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Entsperren" UIHint="Headline" />
-
+                     
                             <!-- Use OpenKNX lock'n'go -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00300" HelpContext="%DOC%" />
                             <choose ParamRefId="%AID%_UP-%TT%%CC%003_R-%TT%%CC%00300">
@@ -376,26 +431,29 @@
                                   <!-- Count Down Start Value DelayBase-->
                                   <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00400" Cell="1,3" HelpContext="%DOC%" />
                                 </ParameterBlock>
-                                <!-- Count Down KO type -->
-                                <choose ParamRefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000">
-                                  <when test="1">
-                                    <!-- Count Down KO type second -->
-                                    <!-- KO Verbleibend Sekunden -->
-                                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00900" />
-                                  </when>
-                                  <when test="2">
-                                    <!-- Count Down KO type minute -->
-                                    <!-- KO Verbleibend Minuten -->
-                                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00910" />
-                                  </when>
-                                </choose>
-                         
-                                <!-- KO Status Text -->
-                                <ComObjectRefRef RefId="%AID%_O-%TT%%CC%010_R-%TT%%CC%01000" />
+                              
        
                               </when>
                             </choose>
 
+                            <!-- Count Down KO type -->
+                            <choose ParamRefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000">
+                              <when test="1">
+                                <!-- Count Down KO type second -->
+                                <!-- KO Verbleibend Sekunden -->
+                                <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00900" />
+                              </when>
+                              <when test="2">
+                                <!-- Count Down KO type minute -->
+                                <!-- KO Verbleibend Minuten -->
+                                <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00910" />
+                              </when>
+                            </choose>
+                      
+                            <!-- KO Status Text -->
+                            <ComObjectRefRef RefId="%AID%_O-%TT%%CC%010_R-%TT%%CC%01000" />
+
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Türkontakt" UIHint="Headline" />
                             <!-- Use KNX door sensor -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%006_R-%TT%%CC%00600" HelpContext="%DOC%" />
@@ -449,27 +507,57 @@
                               </when>
                             </choose>
 
-                             <choose ParamRefId="%AID%_UP-%TT%%CC%017_R-%TT%%CC%01700">
-                              <when test="1">
-                                <!-- Lock mode night enabled is active -->
-                                  <choose ParamRefId="%AID%_UP-%TT%%CC%019_R-%TT%%CC%01900">
-                                  <when test="1 2 3">
-                                    <!-- object selected -->
-                                    <!-- Night -->
-                                    <ComObjectRefRef RefId="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" />
-                                  </when>
-                                </choose>
+                            <!-- Alarm -->
+                            <choose ParamRefId="%AID%_UP-%TT%%CC%015_R-%TT%%CC%01500">
+                              <when test="!=0">
+                                <!-- Alarm is active -->
+                                <!-- KO Burglar Alarm -->
+                                <ComObjectRefRef RefId="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" />
                               </when>
                             </choose>
+
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Nacht" UIHint="Headline" />
+                           
+                            <!-- Night selection -->
+                            <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%019_R-%TT%%CC%01900" HelpContext="%DOC%" />
+                            <choose ParamRefId="%AID%_UP-%TT%%CC%019_R-%TT%%CC%01900">
+                              <when test="2 4 5">
+                                <!-- time window selected -->
+                                <!-- Night time start -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%020_R-%TT%%CC%02000" HelpContext="%DOC%" />
+                                <!-- Night time end -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%021_R-%TT%%CC%02100" HelpContext="%DOC%" />  
+                              </when>
+                              <when test="2 3 4 5">
+                                <!-- Night start action -->
+                                <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%022_R-%TT%%CC%02200" HelpContext="%DOC%" />
+                                <!-- Night end action -->
+                                <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%023_R-%TT%%CC%02300" HelpContext="%DOC%" />
+                              </when>
+                            </choose>
+
+                            <!-- Night selection -->
+                            <choose ParamRefId="%AID%_UP-%TT%%CC%019_R-%TT%%CC%01900">
+                              <when test="3 4 5">
+                                <!-- object selected -->
+                                <!-- Night -->
+                                <ComObjectRefRef RefId="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" />
+                              </when>
+                            </choose>
+                             
                           </ParameterBlock>
                         </when>
                         <when test="2">
                           <!-- Nuki Opener -->
-                          <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%NUKOpener"   Text="Opener %C%: {{0: ...}}"   TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" Icon="door-closed-lock" HelpContext="Empty" ShowInComObjectTree="true">
+                          <ParameterBlock Id="%AID%_PB-nnn" Name="f%CC%NUKOpener"   Text="%C% Opener: {{0: ...}}"   TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" Icon="door-closed-lock" HelpContext="Empty" ShowInComObjectTree="true">
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Opener" UIHint="Headline" />
-              
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+
+                            
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Um mit dem Nuki Opener koppeln zu können, muss die KNX Adresse programmiert sein. Danach am Opener die Taste für ca. 10 Sekunden drücken. Durch Betätigung des Buttons 'Mit Opener koppeln' wird die Koppelung durchgeführt." UIHint="Information" />
                             <Button Id="%AID%_B-%TT%%CC%002" Text="Mit Opener koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;module&quot;: %TT%, &quot;channel&quot;:%C% }" />
-              
+                         
                             <!-- Kanal Name -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" HelpContext="%DOC%" />
                             <!-- Channel Disabled -->

@@ -40,6 +40,15 @@
 								</TypeRestriction>
 							</ParameterType>
 
+							<ParameterType Id="%AID%_PT-NUKAutoLock" Name="NUKAutoLock">
+								<TypeRestriction Base="Value" SizeInBit="2">
+									<Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
+									<Enumeration Text="Bei Tag und Nacht" Value="1" Id="%ENID%" />
+									<Enumeration Text="Bei Tag" Value="2" Id="%ENID%" />
+									<Enumeration Text="Bei Nacht" Value="3" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
 							<ParameterType Id="%AID%_PT-NUKLock" Name="NUKAlarm">
 								<TypeRestriction Base="Value" SizeInBit="1">
 									<Enumeration Text="einfach" Value="0" Id="%ENID%" />
@@ -48,11 +57,22 @@
 							</ParameterType>
 
 							<ParameterType Id="%AID%_PT-NUKNight" Name="NUKNight">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
+									<!-- <Enumeration Text="Nuki Einstellung" Value="1" Id="%ENID%" /> -->
+									<Enumeration Text="Zeitfenster" Value="2" Id="%ENID%" />
+									<Enumeration Text="Objekt" Value="3" Id="%ENID%" />
+									<Enumeration Text="Objekt UND Zeitfenster" Value="4" Id="%ENID%" />
+									<Enumeration Text="Objekt ODER Zeitfenster" Value="5" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
+							<ParameterType Id="%AID%_PT-NUKNightAction" Name="NUKNightAction">
 								<TypeRestriction Base="Value" SizeInBit="4">
-									<Enumeration Text="Zeitfenster" Value="0" Id="%ENID%" />
-									<Enumeration Text="Objekt" Value="1" Id="%ENID%" />
-									<Enumeration Text="Objekt UND Zeitfenster" Value="2" Id="%ENID%" />
-									<Enumeration Text="Objekt ODER Zeitfenster" Value="3" Id="%ENID%" />
+									<Enumeration Text="keine Aktion" Value="0" Id="%ENID%" />
+									<Enumeration Text="einfach versperren" Value="1" Id="%ENID%" />
+									<Enumeration Text="2-fach versperren" Value="2" Id="%ENID%" />
+									<Enumeration Text="entsperren" Value="3" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
 
