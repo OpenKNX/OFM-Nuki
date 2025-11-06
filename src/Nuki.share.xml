@@ -40,6 +40,15 @@
 								</TypeRestriction>
 							</ParameterType>
 
+							<ParameterType Id="%AID%_PT-NUKUseCountDownForAutoLock" Name="NUKUseCountDownForAutoLock">
+								<TypeRestriction Base="Value" SizeInBit="2">
+									<Enumeration Text="Nein" Value="0" Id="%ENID%" />
+									<Enumeration Text="Ja" Value="1" Id="%ENID%" />
+									<Enumeration Text="Nur die letzte Minute" Value="2" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
+
 							<ParameterType Id="%AID%_PT-NUKAutoLock" Name="NUKAutoLock">
 								<TypeRestriction Base="Value" SizeInBit="2">
 									<Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
@@ -55,6 +64,22 @@
 									<Enumeration Text="2-fach" Value="1" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
+
+							<ParameterType Id="%AID%_PT-NUKLockNGoRepeat" Name="NUKLockNGoRepeat">
+								<TypeRestriction Base="Value" SizeInBit="2">
+									<Enumeration Text="Nichts" Value="0" Id="%ENID%" />
+									<Enumeration Text="Zeit neu starten" Value="1" Id="%ENID%" />
+									<Enumeration Text="Versperren" Value="2" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
+							<ParameterType Id="%AID%_PT-NUKLockNGoOff" Name="NUKLockNGoOff">
+								<TypeRestriction Base="Value" SizeInBit="1">
+									<Enumeration Text="Nichts" Value="0" Id="%ENID%" />
+									<Enumeration Text="Versperren" Value="1" Id="%ENID%" />
+								</TypeRestriction>
+							</ParameterType>
+
 
 							<ParameterType Id="%AID%_PT-NUKNight" Name="NUKNight">
 								<TypeRestriction Base="Value" SizeInBit="8">

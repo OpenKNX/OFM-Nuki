@@ -19,6 +19,9 @@ function nukAddChannel(device, online, progress, context) {
 
 function nukPairDevice(device, online, progress, context) {
     progress.setText("Starte Bluetooth Koppelung Kanal " + context.channel);
+    var isPaired = device.getParameterByName('NUK_CH' + context.channel + 'IsPaired');
+    isPaired.value = 1;
+    
     online.connect();
 
     var data = [
@@ -40,6 +43,8 @@ function nukPairDevice(device, online, progress, context) {
         throw new Error("Unbekannter Fehler: " + result);
     
     online.disconnect();
+    var isPaired = device.getParameterByName('NUK_CH' + context.channel + 'IsPaired');
+    isPaired.value = 1;
     progress.setText("Nuki Gerät erfolgreich gekoppelt.");
 }
 

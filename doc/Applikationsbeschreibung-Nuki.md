@@ -40,10 +40,26 @@ Optionen:
 ### Lock'n'Go-Zeit Eimheit
 
 <!-- DOC -->
+### Manuelles öffnen startet Lock'n'Go
+
+<!-- DOC -->
+### Öffnen über Nuki Taste startet Lock'n'Go
+
+
+<!-- DOC -->
+### Weiters EIN Signal am OpenKNX Lock'n'Go Eingang
+
+<!-- DOC -->
+### AUS Signal am OpenKNX Lock'n'Go Eingang
+
+<!-- DOC -->
 ### Automatisch versperren Zeit
 
 <!-- DOC -->
 ### Automatisch versperren Zeit Einheit
+
+<!-- DOC -->
+### Verbleibend Count-Down verwenden
 
 <!-- DOC HelpContext="WaitTime"-->
 ### Wartezeit

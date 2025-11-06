@@ -10,6 +10,10 @@
             <Parameters>
               <!-- Channel Name -->
               <Parameter Id="%AID%_P-%TT%%CC%000" Name="Channel%C%Name" ParameterType="%AID%_PT-Text40Byte" Text="Bezeichnung" Value="" />
+
+              <!-- Is Paired -->
+              <Parameter Id="%AID%_P-%TT%%CC%030" Name="Channel%C%IsPaired" ParameterType="%AID%_PT-CheckBox" Text="Ist gekoppelt" Value="0"  Access="None" />
+
               
               <!-- Base Settings -->
               <Union SizeInBit="8">
@@ -22,7 +26,7 @@
               </Union>
 
               <!-- *** Nuki Lock *** -->
-              <Union SizeInBit="136">
+              <Union SizeInBit="144">
                 <Memory CodeSegment="%MID%" Offset="1" BitOffset="0" />
                 <!-- Use OpenKNX lock'n'go -->
                 <Parameter Id="%AID%_UP-%TT%%CC%003" Offset="0" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%OpenKNXLockNgo" Text="OpenKNX Lock`n`Go" Value="0" />
@@ -85,10 +89,22 @@
                 <!-- Start night action-->
                 <Parameter Id="%AID%_UP-%TT%%CC%022" Offset="16" BitOffset="0" ParameterType="%AID%_PT-NUKNightAction" Name="CH%C%NightStartAction" Text="Aktion bei Nachtanfang" Value="0" />
                 <!-- End night action-->
-                <Parameter Id="%AID%_UP-%TT%%CC%023" Offset="16" BitOffset="4" ParameterType="%AID%_PT-NUKNightAction" Name="CH%C%NightEndAction" Text="Aktion bei Nachtende" Value="0" />
-              </Union>
+                <Parameter Id="%AID%_UP-%TT%%CC%023" Offset="16" BitOffset="4" ParameterType="%AID%_PT-NUKNightAction" Name="CH%C%NightEndAction" Text="Aktion bei Nachtende" Value="0" />     
+                <!-- Manual open start OpenKNX Lock'n'go timer -->
+                <Parameter Id="%AID%_UP-%TT%%CC%027" Offset="17" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByManual" Text="Manuelles öffnen startet Lock'n'Go" Value="0" />
+                <!-- Nuki button open start OpenKNX Lock'n'go timer -->
+                <Parameter Id="%AID%_UP-%TT%%CC%028" Offset="17" BitOffset="1" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByButton" Text="Öffnen über Nuki Taste startet Lock'n'Go" Value="0" /> 
+                <!-- Use count down for autolock -->
+                <Parameter Id="%AID%_UP-%TT%%CC%029" Offset="17" BitOffset="2" ParameterType="%AID%_PT-NUKUseCountDownForAutoLock" Name="CH%C%UseCountDownForAutoLock" Text="Verbleibend Count-Down verwenden" Value="0" /> 
+                <!-- ^^^ need 2 bits ^^^^-->
+                <!-- ON Repeat on Lock'n'Go -->
+                <Parameter Id="%AID%_UP-%TT%%CC%031" Offset="17" BitOffset="4" ParameterType="%AID%_PT-NUKLockNGoRepeat" Name="CH%C%LockNGoRepeat" Text="Weiters EIN Signal am 'OpenKNX Lock'n'Go' Eingang" Value="0" /> 
+                <!-- ^^^ need 2 bits ^^^^-->
+                <!-- OFF on Lock'n'Go -->
+                <Parameter Id="%AID%_UP-%TT%%CC%032" Offset="17" BitOffset="6" ParameterType="%AID%_PT-NUKLockNGoOff" Name="CH%C%LockNGoOff" Text="AUS Signal am 'OpenKNX Lock'n'Go' Eingang" Value="0" /> 
 
-              <!-- Next parameter Id="%AID%_UP-%TT%%CC%027"-->
+              </Union>
+              <!-- Next parameter Id="%AID%_UP-%TT%%CC%033"-->
 
             </Parameters>
             <ParameterRefs>
@@ -147,6 +163,18 @@
               <ParameterRef Id="%AID%_UP-%TT%%CC%025_R-%TT%%CC%02500" RefId="%AID%_UP-%TT%%CC%025" />
               <!-- Auto lock night DelayTime -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%026_R-%TT%%CC%02600" RefId="%AID%_UP-%TT%%CC%026" />
+              <!-- Manual open start OpenKNX Lock'n'go timer -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%027_R-%TT%%CC%02700" RefId="%AID%_UP-%TT%%CC%027" />
+              <!-- Nuki button open start OpenKNX Lock'n'go timer -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%028_R-%TT%%CC%02800" RefId="%AID%_UP-%TT%%CC%028" />
+              <!-- Use count down for autolock -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%029_R-%TT%%CC%02900" RefId="%AID%_UP-%TT%%CC%029" />
+              <!-- Is paired-->
+              <ParameterRef Id="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  RefId="%AID%_P-%TT%%CC%030" />
+              <!-- ON Repeat on Lock'n'Go -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%031_R-%TT%%CC%03100" RefId="%AID%_UP-%TT%%CC%031" />
+              <!-- OFF on Lock'n'Go -->
+              <ParameterRef Id="%AID%_UP-%TT%%CC%032_R-%TT%%CC%03200" RefId="%AID%_UP-%TT%%CC%032" />
               
             </ParameterRefs>
             <ComObjectTable>
@@ -266,11 +294,12 @@
               </ParameterBlock>
 
               <ParameterBlock Id="%AID%_PB-nnn" Name="Channel">
-
+                  
                 <!-- Anzahl der Kanäle -->
                 <choose ParamRefId="%AID%_UP-%TT%00000_R-%TT%0000001">
                   <when test="&gt;=%C%">
                     
+                    <!-- Channel Type -->
                     <choose ParamRefId="%AID%_UP-%TT%%CC%001_R-%TT%%CC%00100">
                         <when test="0">
                           <!-- ************ Deaktiviert ************ -->
@@ -288,10 +317,18 @@
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Smart Lock" UIHint="Headline" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
 
+                            <!-- Is Paired -->
+                            <ParameterRefRef RefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  />
+                            <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
+                              <when test="0">
+                                <!-- Not paired -->
+                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Smart Lock für 10 Sekunden drücken bis der Ring leuchtet&#x0A;3) In der ETS mit 'Mit Smart Lock koppeln' betätigen&#x0A;&#x0A;Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
+                              </when>
+                            </choose>
 
-                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Um mit dem Nuki Smart Lock koppeln zu können, muss die KNX Adresse programmiert sein. Danach am Smart Lock die Taste für ca. 10 Sekunden drücken bis der Ring leuchtet. Durch Betätigung des Buttons 'Mit Smart Lock koppeln' wird die Koppelung durchgeführt." UIHint="Information" />
                             <Button Id="%AID%_B-%TT%%CC%000" Text="Mit Smart Lock koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;Module&quot;: %TT%, &quot;channel&quot;:%C%  }" />              
-                     
+                        
+
                             <!-- Channel Name -->         
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" HelpContext="%DOC%" />
                             <!-- Channel Disabled -->
@@ -315,10 +352,7 @@
                          
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Versperren" UIHint="Headline" />
-
-                            <!-- Count Down KO type -->
-                            <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000" HelpContext="%DOC%" />
-                          
+            
 
                             <!-- Use Auto Lock -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%012_R-%TT%%CC%01200" HelpContext="%DOC%" />
@@ -342,6 +376,8 @@
                                   <!-- Auto lock DelayBase-->
                                   <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%008_R-%TT%%CC%00800" Cell="1,3" HelpContext="%DOC%" />
                                 </ParameterBlock>
+                                <!-- Use count down for autolock -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%029_R-%TT%%CC%02900" HelpContext="%DOC%" />
                               </when>
                             </choose>
 
@@ -432,9 +468,25 @@
                                   <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%004_R-%TT%%CC%00400" Cell="1,3" HelpContext="%DOC%" />
                                 </ParameterBlock>
                               
-       
+                                <!-- Manual open start OpenKNX Lock'n'go timer -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%027_R-%TT%%CC%02700" HelpContext="%DOC%" />
+                                <!-- Nuki button open start OpenKNX Lock'n'go timer -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%028_R-%TT%%CC%02800" HelpContext="%DOC%" />
+
+                                <!-- ON Repeat on Lock'n'Go -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%031_R-%TT%%CC%03100" HelpContext="%DOC%" />
+                                <!-- OFF Repeat on Lock'n'Go -->
+                                <ParameterRefRef IndentLevel="2" RefId="%AID%_UP-%TT%%CC%032_R-%TT%%CC%03200" HelpContext="%DOC%" />
+
                               </when>
                             </choose>
+                            
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Versperr-Count-Down" UIHint="Headline" />
+
+                            <!-- Count Down KO type -->
+                            <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000" HelpContext="%DOC%" />
+              
 
                             <!-- Count Down KO type -->
                             <choose ParamRefId="%AID%_UP-%TT%%CC%010_R-%TT%%CC%01000">
@@ -554,10 +606,19 @@
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Opener" UIHint="Headline" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
 
-                            
-                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Um mit dem Nuki Opener koppeln zu können, muss die KNX Adresse programmiert sein. Danach am Opener die Taste für ca. 10 Sekunden drücken. Durch Betätigung des Buttons 'Mit Opener koppeln' wird die Koppelung durchgeführt." UIHint="Information" />
+                            <!-- Is Paired -->
+                            <ParameterRefRef RefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  />
+               
+                            <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
+                              <when test="0">
+                                <!-- Not paired -->
+                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Opener für 10 Sekunden drücken&#x0A;3) In der ETS mit 'Mit Opener koppeln' betätigen&#x0A;&#x0A;Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
+                                </when>
+                            </choose>
                             <Button Id="%AID%_B-%TT%%CC%002" Text="Mit Opener koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;module&quot;: %TT%, &quot;channel&quot;:%C% }" />
-                         
+                        
+
+
                             <!-- Kanal Name -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" HelpContext="%DOC%" />
                             <!-- Channel Disabled -->

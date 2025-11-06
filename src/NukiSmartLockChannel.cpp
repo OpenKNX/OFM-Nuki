@@ -217,9 +217,10 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
     _lastKeyTurnerStateRequest = max(1UL, millis());
     _retryKeyTurnStateRequestMs = 600000*12; // 12 hours
 
-    uint8_t result = _smartLock.requestKeyTurnerState(&_keyTurnerState);
-    if (result == 1)
+    Nuki::CmdResult result = _smartLock.requestKeyTurnerState(&_keyTurnerState);
+    if (result == Nuki::CmdResult::Success)
     {
+        _retryRequestKeyTurnerState = 0;
         logInfoP("Lock state: %d (%s)", _keyTurnerState.lockState, lockStateToString(_keyTurnerState.lockState));
         logInfoP("Nuki time: %02d:%02d:%02d", (int) _keyTurnerState.currentTimeHour,
         (int) _keyTurnerState.currentTimeMinute, (int) _keyTurnerState.currentTimeSecond);
@@ -272,41 +273,57 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
             _keyTurnerState.lockState != NukiLock::LockState::Locking)
         {
             _lockTimerStartTime = max(0ul, millis());
+            _countDownType = NukiCountDownType::NukiCountDownType_AutoLock;
             if (ParamNUK_CHLockModeNightEnable && _isNight)
                 _lockTimerWaitTimeMs = ParamNUK_CHAutoLockNightDelayTimeMS;
             else
                 _lockTimerWaitTimeMs = ParamNUK_CHAutoLockDelayTimeMS;
         }
         auto nukiLockNgoActive = _keyTurnerState.lockNgoTimer > 0 && _keyTurnerState.lockNgoTimer < 255;
-        if (nukiLockNgoActive != _nukiLockNgoActive)
+        if (nukiLockNgoActive != (_countDownType == NukiCountDownType::NukiCountDownType_NukiLockNGo))
         {
-            _nukiLockNgoActive = nukiLockNgoActive;
-            if (_nukiLockNgoActive)
+            if (nukiLockNgoActive)
             {
                 logDebugP("Lock'n'Go active for %d seconds", (int)_keyTurnerState.lockNgoTimer);
                 _lockTimerStartTime = max(0ul, millis());
+                _countDownType = NukiCountDownType::NukiCountDownType_NukiLockNGo;
                 _lockTimerWaitTimeMs = _keyTurnerState.lockNgoTimer * 1000;
             }
             else
             {
                 _lockTimerStartTime = 0;
+                _countDownType = NukiCountDownType::NukiCountDownType_NotRunning;
             }
         }
         if (_keyTurnerState.lockState == NukiLock::LockState::Locked)
         {
-            _nukiLockNgoActive = false;
+             _countDownType = NukiCountDownType::NukiCountDownType_NotRunning;
             _lockTimerStartTime = 0;
             if (ParamNUK_CHOpenKNXLockNgo)
                 KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t) 0, DPT_Switch);
         }
         KoNUK_LockState.valueCompare((uint8_t) _keyTurnerState.lockState, DPT_Value_1_Ucount);
         _updateTextState = true;
+        if ((_keyTurnerState.lockState == NukiLock::LockState::UnlockedLnga ||
+            _keyTurnerState.lockState == NukiLock::LockState::Unlocked ||
+            _keyTurnerState.lockState == NukiLock::LockState::Unlatching ||
+            _keyTurnerState.lockState == NukiLock::LockState::Unlatching) &&
+            _keyTurnerState.trigger  == NukiLock::Trigger::Manual && 
+            _countDownType != NukiCountDownType::NukiCountDownType_OpenKNXLockNGo &&
+            _countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo &&
+            ParamNUK_CHOpenKNXLockNgo) 
+        {
+            logInfoP("Starting OpenKNX Lock'n'Go timer");
+            startLockNGoCloseTimer();
+        }
     }
     else
     {
         _keyTurnerState.nukiState = NukiLock::State::Uninitialized;
         logErrorP("cmd failed: %d", result);
-        _retryKeyTurnStateRequestMs = 60000; // 1 minute
+        if (_retryRequestKeyTurnerState < 60)
+            _retryRequestKeyTurnerState++;
+        _retryKeyTurnStateRequestMs = 1000 * _retryRequestKeyTurnerState; 
     }
     return result;
 }
@@ -404,6 +421,31 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
             if (ko.value(DPT_Trigger))
             {
                 logInfoP("OpenKNX Lock'n'Go command received via KNX");
+                if (_countDownType == NukiCountDownType::NukiCountDownType_NukiLockNGo)
+                {
+                    logWarningP("OpenKNX Lock'n'Go command received via KNX while Nuki Lock'n'Go running, ignored");
+                    return;
+                }
+                if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
+                {
+                    // <Enumeration Text="Nichts" Value="0" Id="%ENID%" />
+                    // <Enumeration Text="Zeit neu starten" Value="1" Id="%ENID%" />
+                    // <Enumeration Text="Versperren" Value="2" Id="%ENID%" />
+                    switch (ParamNUK_CHLockNGoRepeat)
+                    {
+                        case 1: 
+                            logInfoP("Restart OpenKNX Lock'n'Go time");
+                            _lockTimerStartTime = max(1UL, millis());
+                            _lockTimerDuration = 0;
+                            break;
+                        case 2: 
+                            _lockTimerWaitTimeMs = 0;
+                            break;
+                    }
+                    return;
+                }
+                
+                startLockNGoCloseTimer();
                 // <Enumeration Text="Entsperren" Value="0" Id="%ENID%" />
                 // <Enumeration Text="Lasche ziehen" Value="1" Id="%ENID%" />
                 if (ParamNUK_CHLockNGoMode)
@@ -414,11 +456,17 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                 {
                     _lockAction = NukiLock::LockAction::Unlatch;
                 }
-                _lockTimerStartTime = max(1UL, millis());
-                _lockTimerWaitTimeMs = ParamNUK_CHLockNGoDelayTimeMS;
-                _doorOpenBreak = _doorOpen;
-                KoNUK_OpenKNXLocknGoState.value((uint8_t) 1, DPT_Switch);
-                updateStates(_lockTimerStartTime);
+
+            }
+            else
+            {
+                // <Enumeration Text="Nichts" Value="0" Id="%ENID%" />
+                // <Enumeration Text="Versperren" Value="1" Id="%ENID%" />
+                if (ParamNUK_CHLockNGoOff)
+                {
+                    logInfoP("OpenKNX Lock'n'Go OFF received via KNX");
+                    _lockTimerWaitTimeMs = 0;
+                }
             }
         }
         break;
@@ -435,6 +483,15 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
     }
 }
 
+void NukiSmartLockChannel::startLockNGoCloseTimer()
+{
+    _countDownType = NukiCountDownType::NukiCountDownType_OpenKNXLockNGo;
+    _lockTimerStartTime = max(1UL, millis());
+    _lockTimerWaitTimeMs = ParamNUK_CHLockNGoDelayTimeMS;
+    _doorOpenBreak = _doorOpen;
+    KoNUK_OpenKNXLocknGoState.value((uint8_t)1, DPT_Switch);
+    updateStates(_lockTimerStartTime);
+}
 
 NukiLock::LockAction NukiSmartLockChannel::getCurrentValidConfiguredLockAction()
 {
@@ -590,24 +647,51 @@ void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
     }
 }
 
+bool NukiSmartLockChannel::useCountDownKoAndStateText()
+{
+    if (_lockTimerStartTime == 0)
+        return false;
+    switch (_countDownType)
+    {
+        case NukiCountDownType::NukiCountDownType_NotRunning:
+            return false;
+        case NukiCountDownType::NukiCountDownType_AutoLock:
+            // <Enumeration Text="Nein" Value="0" Id="%ENID%" />
+            // <Enumeration Text="Ja" Value="1" Id="%ENID%" />
+            // <Enumeration Text="Nur die letzte Minute" Value="2" Id="%ENID%" />
+            switch (ParamNUK_CHUseCountDownForAutoLock)
+            {
+                case 1:
+                    return true;
+                case 2:
+                    return _remainingSeconds <= 60;
+                default:
+                    return false;
+            }
+        default:
+            return true;
+    }
+}
+
 void NukiSmartLockChannel::updateTextState()
 {
-    if (_remainingSecOrMin > 0)
+    if (useCountDownKoAndStateText())
     {
+        
         _textState = "Offen ";
-        _textState += std::to_string(_remainingSecOrMin);
-        // <Enumeration Text="Keines" Value="0" Id="%ENID%" />
-        // <Enumeration Text="Sekunden" Value="1" Id="%ENID%" />
-        // <Enumeration Text="Minuten" Value="2" Id="%ENID%" />
-        switch (ParamNUK_CHCountDownKoType)
+        if (_doorOpenBreak)
+            _textState += " --";
+        else if (_remainingSeconds >= 60)
         {
-            case 1:
-                _textState += " Sek.";
-                break;
-            case 2:
-                _textState += " Min.";
-                break;
+            _textState += std::to_string((int) (_remainingSeconds + 59) / 60);
+            _textState += " Min.";
         }
+        else
+        {
+             _textState += std::to_string(_remainingSeconds);
+            _textState += " Sek.";
+        }
+      
     }
     else if (_doorOpen)
         _textState = "Tür offen";
@@ -714,7 +798,7 @@ void NukiSmartLockChannel::loop1()
             }
             if (lockAction != NukiLock::LockAction::Undefined)
                 logErrorP("Pending lock action %d failed after %d retries, giving up", (int)lockAction, maxRetries);
-            updateKeyTurnerState();
+            _retryKeyTurnStateRequestMs = 500; 
            
         }
     }
@@ -801,12 +885,13 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
 {
      if (_lockTimerStartTime != 0)
     {
-        if (!_nukiLockNgoActive)
+        if (_countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo)
         {
             if (!_doorOpenBreak && now - _lockTimerStartTime >= _lockTimerWaitTimeMs)
             {
                 logInfoP("OpenKNX Lock'n'Go period ended");
                 _lockTimerStartTime = 0;   
+                _countDownType = NukiCountDownType::NukiCountDownType_NotRunning;
                 _lockAction = getCurrentValidConfiguredLockAction();
             }
             else
@@ -845,6 +930,7 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
                                 break;
                         }
                     }
+                    updateTextState();
                 }
             }
         }
@@ -854,35 +940,34 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
             _remaining = _lockTimerWaitTimeMs - elapsed;
             if (_remaining < 0)
                 _remaining = 0;
-            // <Enumeration Text="Keines" Value="0" Id="%ENID%" />
-            // <Enumeration Text="Sekunden" Value="1" Id="%ENID%" />
-            // <Enumeration Text="Minuten" Value="2" Id="%ENID%" />
-            switch (ParamNUK_CHCountDownKoType)
+            uint8_t remainingSeconds = min((_remaining / 1000), 255l);
+            if (_remainingSeconds != remainingSeconds)
             {
-                case 1: // seconds
+                _remainingSeconds = remainingSeconds;
+                _updateTextState = true;
+            }
+
+            if (useCountDownKoAndStateText())
+            {
+                // <Enumeration Text="Keines" Value="0" Id="%ENID%" />
+                // <Enumeration Text="Sekunden" Value="1" Id="%ENID%" />
+                // <Enumeration Text="Minuten" Value="2" Id="%ENID%" />
+                switch (ParamNUK_CHCountDownKoType)
                 {
-                    uint8_t remainingSeconds = min((_remaining / 1000), 255l);
-                    if (_remainingSecOrMin != remainingSeconds)
+                    case 1: // seconds
                     {
-                        _remainingSecOrMin = remainingSeconds;
-                        _updateTextState = true;
+                        if (KoNUK_RemainingOpenTime.valueCompare((uint8_t) remainingSeconds, DPT_Value_1_Ucount))
+                            logInfoP("Remaining Open Time (seconds): %d", remainingSeconds);
                     }
-                    if (KoNUK_RemainingOpenTime.valueCompare((uint8_t) remainingSeconds, DPT_Value_1_Ucount))
-                        logInfoP("Remaining Open Time (seconds): %d", remainingSeconds);
-                }
-                break;
-                case 2:
-                {
-                    uint8_t remainingMinutes = min((_remaining / 60000), 255l);
-                    if (_remainingSecOrMin != remainingMinutes)
+                    break;
+                    case 2:
                     {
-                        _remainingSecOrMin = remainingMinutes;
-                        _updateTextState = true;
+                        uint8_t remainingMinutes = (remainingSeconds + 59) / 60;
+                        if (KoNUK_RemainingOpenTime.valueCompare((uint8_t) remainingMinutes, DPT_Value_1_Ucount))
+                            logInfoP("Renumaining Open Time (minutes): %d", remainingMinutes);
                     }
-                    if (KoNUK_RemainingOpenTime.valueCompare((uint8_t) remainingMinutes, DPT_Value_1_Ucount))
-                        logInfoP("Renumaining Open Time (minutes): %d", remainingMinutes);
+                    break;
                 }
-                break;
             }
         }    
     }
