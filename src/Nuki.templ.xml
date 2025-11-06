@@ -322,7 +322,7 @@
                             <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
                               <when test="0">
                                 <!-- Not paired -->
-                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Smart Lock für 10 Sekunden drücken bis der Ring leuchtet&#x0A;3) In der ETS mit 'Mit Smart Lock koppeln' betätigen&#x0A;&#x0A;Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
+                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Smart Lock für 10 Sekunden drücken bis der Ring leuchtet&#x0A;3) In der ETS mit 'Mit Smart Lock koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
                               </when>
                             </choose>
 
@@ -612,7 +612,7 @@
                             <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
                               <when test="0">
                                 <!-- Not paired -->
-                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Opener für 10 Sekunden drücken&#x0A;3) In der ETS mit 'Mit Opener koppeln' betätigen&#x0A;&#x0A;Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
+                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Opener für 10 Sekunden drücken&#x0A;3) In der ETS mit 'Mit Opener koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
                                 </when>
                             </choose>
                             <Button Id="%AID%_B-%TT%%CC%002" Text="Mit Opener koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;module&quot;: %TT%, &quot;channel&quot;:%C% }" />
