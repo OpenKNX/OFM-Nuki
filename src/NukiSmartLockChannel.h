@@ -45,6 +45,7 @@ class NukiSmartLockChannel : public NukiChannel
     void updateTextState();
     void startLockNGoCloseTimer();
     bool useCountDownKoAndStateText();
+    void checkAndStartAutoLock();
   
 public:
     NukiSmartLockChannel(uint8_t _channelIndex);

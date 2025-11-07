@@ -19,9 +19,7 @@ function nukAddChannel(device, online, progress, context) {
 
 function nukPairDevice(device, online, progress, context) {
     progress.setText("Starte Bluetooth Koppelung Kanal " + context.channel);
-    var isPaired = device.getParameterByName('NUK_CH' + context.channel + 'IsPaired');
-    isPaired.value = 1;
-    
+     
     online.connect();
 
     var data = [
@@ -36,15 +34,16 @@ function nukPairDevice(device, online, progress, context) {
     if (result == 3) 
         throw new Error("Fehler: Pairing fehlgeschlagen. Bitte prüfen, ob das Nuki Gerät im Kopplungsmodus ist.");
     if (result == 4) 
-        throw new Error("Fehler: Kanal ungültig. Bitte zuerst die Anwendung programmieren.");
+        throw new Error("Fehler: Kanal ungültig. Bitte zuerst über die ETS die Programmierung durchführen.");
     if (result == 5) 
-        throw new Error("Fehler: Kanal ist deaktiviert. Bitte zuerst die Anwendung programmieren.");
+        throw new Error("Fehler: Kanal ist deaktiviert. Bitte zuerst den Kanal aktivieren.");
     if (result != 2)
         throw new Error("Unbekannter Fehler: " + result);
     
     online.disconnect();
-    var isPaired = device.getParameterByName('NUK_CH' + context.channel + 'IsPaired');
-    isPaired.value = 1;
+    var showPairing = device.getParameterByName('NUK_CH' + context.channel + 'ShowPairing'); // NUK_CH1ShowPairing
+    showPairing.value = 0;
+   
     progress.setText("Nuki Gerät erfolgreich gekoppelt.");
 }
 

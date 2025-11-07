@@ -9,10 +9,10 @@
           <Static>
             <Parameters>
               <!-- Channel Name -->
-              <Parameter Id="%AID%_P-%TT%%CC%000" Name="Channel%C%Name" ParameterType="%AID%_PT-Text40Byte" Text="Bezeichnung" Value="" />
+              <Parameter Id="%AID%_P-%TT%%CC%000" Name="CH%C%Name" ParameterType="%AID%_PT-Text40Byte" Text="Bezeichnung" Value="" />
 
-              <!-- Is Paired -->
-              <Parameter Id="%AID%_P-%TT%%CC%030" Name="Channel%C%IsPaired" ParameterType="%AID%_PT-CheckBox" Text="Ist gekoppelt" Value="0"  Access="None" />
+              <!-- Show Pairing -->
+              <Parameter Id="%AID%_P-%TT%%CC%030" Name="CH%C%ShowPairing" ParameterType="%AID%_PT-CheckBox" Text="Abschnitt anzeigen" Value="1" />
 
               
               <!-- Base Settings -->
@@ -169,7 +169,7 @@
               <ParameterRef Id="%AID%_UP-%TT%%CC%028_R-%TT%%CC%02800" RefId="%AID%_UP-%TT%%CC%028" />
               <!-- Use count down for autolock -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%029_R-%TT%%CC%02900" RefId="%AID%_UP-%TT%%CC%029" />
-              <!-- Is paired-->
+              <!-- Show Pairing-->
               <ParameterRef Id="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  RefId="%AID%_P-%TT%%CC%030" />
               <!-- ON Repeat on Lock'n'Go -->
               <ParameterRef Id="%AID%_UP-%TT%%CC%031_R-%TT%%CC%03100" RefId="%AID%_UP-%TT%%CC%031" />
@@ -317,23 +317,28 @@
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Smart Lock" UIHint="Headline" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
 
-                            <!-- Is Paired -->
-                            <ParameterRefRef RefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  />
-                            <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
-                              <when test="0">
-                                <!-- Not paired -->
-                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Smart Lock für 10 Sekunden drücken bis der Ring leuchtet&#x0A;3) In der ETS mit 'Mit Smart Lock koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
-                              </when>
-                            </choose>
-
-                            <Button Id="%AID%_B-%TT%%CC%000" Text="Mit Smart Lock koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;Module&quot;: %TT%, &quot;channel&quot;:%C%  }" />              
-                        
-
                             <!-- Channel Name -->         
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" HelpContext="%DOC%" />
                             <!-- Channel Disabled -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00200" HelpContext="%DOC%" />
 
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Bluetooth Kopplung (Pairing)" UIHint="Headline" />
+                             
+                            <!-- Show Pairing -->
+                            <ParameterRefRef RefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  />
+                            <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
+                              <when test="0">
+                                <!-- Hidden -->
+                              </when>                        
+                              <when test ="1">
+                                <!-- Show Pairing -->
+                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Smart Lock für 10 Sekunden drücken bis der Ring leuchtet&#x0A;3) In der ETS mit 'Mit Smart Lock koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
+                                <Button Id="%AID%_B-%TT%%CC%000" Text="Mit Smart Lock koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;Module&quot;: %TT%, &quot;channel&quot;:%C%  }" />              
+                        
+                              </when>
+                            </choose>
+                        
                             <!-- KO Batteriestatus -->
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" />
                             <!-- KO Auf/Zu -->
@@ -606,24 +611,29 @@
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="Opener" UIHint="Headline" />
                             <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
 
-                            <!-- Is Paired -->
-                            <ParameterRefRef RefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  />
-               
-                            <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
-                              <when test="0">
-                                <!-- Not paired -->
-                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Opener für 10 Sekunden drücken&#x0A;3) In der ETS mit 'Mit Opener koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
-                                </when>
-                            </choose>
-                            <Button Id="%AID%_B-%TT%%CC%002" Text="Mit Opener koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;module&quot;: %TT%, &quot;channel&quot;:%C% }" />
-                        
-
-
-                            <!-- Kanal Name -->
+                             <!-- Kanal Name -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" HelpContext="%DOC%" />
                             <!-- Channel Disabled -->
                             <ParameterRefRef IndentLevel="1" RefId="%AID%_UP-%TT%%CC%002_R-%TT%%CC%00200" HelpContext="%DOC%" />
 
+
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
+                            <ParameterSeparator Id="%AID%_PS-nnn" Text="Bluetooth Kopplung (Pairing)" UIHint="Headline" />
+                          
+                            <!-- Show Pairing -->
+                            <ParameterRefRef RefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000"  />
+                             <choose ParamRefId="%AID%_P-%TT%%CC%030_R-%TT%%CC%03000">
+                              <when test="0">
+                                <!-- Hidden -->
+                              </when>
+                              <when test="1">    
+                                <!-- Show Pairing section -->
+                                <ParameterSeparator Id="%AID%_PS-nnn" Text="Nuki koppeln:&#x0A;1) Gerät über die ETS programmieren&#x0A;2) Knopf am Opener für 10 Sekunden drücken&#x0A;3) In der ETS mit 'Mit Opener koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln." UIHint="Information" />
+                                <Button Id="%AID%_B-%TT%%CC%002" Text="Mit Opener koppeln" EventHandlerOnline="ConnectionOriented" EventHandler="nukPairDevice" EventHandlerParameters="{ &quot;module&quot;: %TT%, &quot;channel&quot;:%C% }" />
+                              </when>
+                            </choose>
+                        
+                           
               
                             <!-- KO Batteriestatus -->
                             <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />

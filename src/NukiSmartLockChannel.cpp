@@ -266,19 +266,7 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
                 break;
         }
         KoNUK_MotorBlocked.valueCompare((_keyTurnerState.lockState == NukiLock::LockState::MotorBlocked) ? (uint8_t) 1 : (uint8_t) 0, DPT_Switch);
-        if (((ParamNUK_CHLockModeNightEnable && (_isNight ? ParamNUK_CHAutoLockNight : ParamNUK_CHAutoLock)) ||
-             (!ParamNUK_CHLockModeNightEnable && ParamNUK_CHAutoLockNight)) &&
-            _lockTimerStartTime == 0 && 
-            _keyTurnerState.lockState != NukiLock::LockState::Locked && 
-            _keyTurnerState.lockState != NukiLock::LockState::Locking)
-        {
-            _lockTimerStartTime = max(0ul, millis());
-            _countDownType = NukiCountDownType::NukiCountDownType_AutoLock;
-            if (ParamNUK_CHLockModeNightEnable && _isNight)
-                _lockTimerWaitTimeMs = ParamNUK_CHAutoLockNightDelayTimeMS;
-            else
-                _lockTimerWaitTimeMs = ParamNUK_CHAutoLockDelayTimeMS;
-        }
+        checkAndStartAutoLock();
         auto nukiLockNgoActive = _keyTurnerState.lockNgoTimer > 0 && _keyTurnerState.lockNgoTimer < 255;
         if (nukiLockNgoActive != (_countDownType == NukiCountDownType::NukiCountDownType_NukiLockNGo))
         {
@@ -308,7 +296,8 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
             _keyTurnerState.lockState == NukiLock::LockState::Unlocked ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlatching ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlatching) &&
-            _keyTurnerState.trigger  == NukiLock::Trigger::Manual && 
+            ((_keyTurnerState.trigger == NukiLock::Trigger::Manual && ParamNUK_CHLockNGoByManual) ||
+            (_keyTurnerState.trigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton)) && 
             _countDownType != NukiCountDownType::NukiCountDownType_OpenKNXLockNGo &&
             _countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo &&
             ParamNUK_CHOpenKNXLockNgo) 
@@ -320,12 +309,32 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
     else
     {
         _keyTurnerState.nukiState = NukiLock::State::Uninitialized;
-        logErrorP("cmd failed: %d", result);
+        if (_retryRequestKeyTurnerState > 0)
+            logErrorP("cmd failed: %d", result);
+        else
+            logDebugP("cmd failed: %d", result);
         if (_retryRequestKeyTurnerState < 60)
             _retryRequestKeyTurnerState++;
         _retryKeyTurnStateRequestMs = 1000 * _retryRequestKeyTurnerState; 
     }
     return result;
+}
+
+void NukiSmartLockChannel::checkAndStartAutoLock()
+{
+    if (((ParamNUK_CHLockModeNightEnable && (_isNight ? ParamNUK_CHAutoLockNight : ParamNUK_CHAutoLock)) ||
+            (!ParamNUK_CHLockModeNightEnable && ParamNUK_CHAutoLockNight)) &&
+        _lockTimerStartTime == 0 && 
+        _keyTurnerState.lockState != NukiLock::LockState::Locked && 
+        _keyTurnerState.lockState != NukiLock::LockState::Locking)
+    {
+        _lockTimerStartTime = max(0ul, millis());
+        _countDownType = NukiCountDownType::NukiCountDownType_AutoLock;
+        if (ParamNUK_CHLockModeNightEnable && _isNight)
+            _lockTimerWaitTimeMs = ParamNUK_CHAutoLockNightDelayTimeMS;
+        else
+            _lockTimerWaitTimeMs = ParamNUK_CHAutoLockDelayTimeMS;
+    }
 }
 
 void NukiSmartLockChannel::initialize(BleScanner::Scanner& scanner)
@@ -431,6 +440,7 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                     // <Enumeration Text="Nichts" Value="0" Id="%ENID%" />
                     // <Enumeration Text="Zeit neu starten" Value="1" Id="%ENID%" />
                     // <Enumeration Text="Versperren" Value="2" Id="%ENID%" />
+                    //<Enumeration Text="Dauerhaft entsperren" Value="3" Id="%ENID%" />
                     switch (ParamNUK_CHLockNGoRepeat)
                     {
                         case 1: 
@@ -439,7 +449,14 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                             _lockTimerDuration = 0;
                             break;
                         case 2: 
+                            logInfoP("OpenKNX Lock'n'Go restart");
                             _lockTimerWaitTimeMs = 0;
+                            break;
+                         case 3:
+                            logInfoP("OpenKNX Lock'n'Go set to indefinite unlock");
+                            _lockTimerWaitTimeMs = 0;
+                            _countDownType = NukiCountDownType::NukiCountDownType_NotRunning;
+                            checkAndStartAutoLock();
                             break;
                     }
                     return;
@@ -798,7 +815,7 @@ void NukiSmartLockChannel::loop1()
             }
             if (lockAction != NukiLock::LockAction::Undefined)
                 logErrorP("Pending lock action %d failed after %d retries, giving up", (int)lockAction, maxRetries);
-            _retryKeyTurnStateRequestMs = 500; 
+            _retryKeyTurnStateRequestMs = 0;
            
         }
     }
@@ -883,7 +900,7 @@ void NukiSmartLockChannel::loop()
 
 void NukiSmartLockChannel::updateStates(unsigned long now)
 {
-     if (_lockTimerStartTime != 0)
+    if (_lockTimerStartTime != 0)
     {
         if (_countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo)
         {
