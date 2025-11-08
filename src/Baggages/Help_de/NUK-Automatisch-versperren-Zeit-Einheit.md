@@ -1,6 +1,6 @@
 ﻿### Automatisch versperren Zeit Einheit
 
-Legt die Einheit in der die Zeitangabe für das automatisch versperren verwendet wird fest.
+Legt die Einheit fest, in der die Zeitangabe für das automatische Versperren verwendet wird.
 
 - Sekunden
 - Minuten

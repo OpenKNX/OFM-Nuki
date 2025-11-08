@@ -1,4 +1,4 @@
 ﻿### Verfügbare Kanäle
 
-Anzahl der Nuki Geräte die gesteuert werden soll.
+Anzahl der Nuki Geräte, die gesteuert werden sollen.
 

@@ -1,4 +1,4 @@
 ﻿### Automatisch versperren Zeit
 
-Zeitangabe nach der das Schlos versperrt werden soll.
+Zeitangabe, nach der das Schloss versperrt werden soll.
 

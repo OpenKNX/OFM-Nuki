@@ -1,9 +1,9 @@
-﻿### Nach Tür schliessen
+﻿### Nach Tür schließen
 
 Legt die Aktion fest, die nach dem Schließen der Tür ausgeführt wird
 
 - Versperrwartezeit fortsetzen
-  Die unterbrochen Zeit wird fortgesetzt
+  Die unterbrochene Zeit wird fortgesetzt
 - Versperrwartezeit neu starten
   Der ursprüngliche Versperr-Count-Down wird wieder gestartet 
 - Versperren nach Wartezeit

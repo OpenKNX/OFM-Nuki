@@ -1,6 +1,6 @@
 ﻿### Wiederversperrzeit Eimheit
 
-Legt die Einheit in der die Zeitangabe für das wiederversperren verwendet wird fest.
+Legt die Einheit fest, in der die Zeitangabe für das Wiederversperren verwendet wird.
 
 - Sekunden
 - Minuten

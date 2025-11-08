@@ -4,11 +4,11 @@
 # Applikationsbeschreibung Nuki
 
 Über diese Anwendung kann ein Nuki Smart Lock oder ein Nuki Opener über Bluetooth von dem KNX System gesteuert werden.
-Es müssen daher die Nuki Geräte in Bluetooth Reichweite sich befinden.
+Es müssen sich daher die Nuki Geräte in Bluetooth Reichweite befinden.
 
 ACHTUNG: Die Anwendung kann nicht zusammen mit der Nuki Bridge verwendet werden.
 
-Kompatiblität:
+Kompatibilität:
 - Nuki Smart Lock 1.0
 - Nuki Smart Lock 2.0
 - Nuki Smart Lock 3.0
@@ -17,21 +17,21 @@ Kompatiblität:
 - Nuki Smart Lock 4.0 Pro
 - Nuki Opener
 
-Achtung: Nuki Smart Lock 5.0 ist derzeit nicht unterstüzt.
+Achtung: Nuki Smart Lock 5.0 ist derzeit nicht unterstützt.
 
 # Basiseinstellungen
 
-Es wird die aktuell Versionsnummer des Nuki OpenKNX Moduls angezeigt und die Kanäle werden auf dieser Seite konfiguriert.
+Es wird die aktuelle Versionsnummer des Nuki OpenKNX Moduls angezeigt und die Kanäle werden auf dieser Seite konfiguriert.
 
 <!-- DOC -->
 ## Kanalauswahl
 
-In diesem Abschnitt wird die Anzahl, Verwendung und der Name der Kanäle festgelet.
+In diesem Abschnitt wird die Anzahl, Verwendung und der Name der Kanäle festgelegt.
 
 <!-- DOC -->
 ## Verfügbare Kanäle
 
-Anzahl der Nuki Geräte die gesteuert werden soll.
+Anzahl der Nuki Geräte, die gesteuert werden sollen.
 
 <!-- DOC HelpContext="Bezeichnung" -->
 ### Bezeichnung 1-n
@@ -40,13 +40,13 @@ Name des Gerätes das über den Kanal gesteuert werden soll.
 Beispielsweise: Eingangstüre, Kellertüre
 
 <!-- DOC -->
-### Type
+### Typ
 
-Auswahl welches Nuki Geräte gesteuert werden soll:
+Auswahl, welches Nuki Gerät gesteuert werden soll:
 
 - Deaktiviert
 - Nuki Lock
-- Nuki Openener
+- Nuki Opener
 
 <!-- DOCEND -->
 # 1-n Smart Lock
@@ -61,25 +61,25 @@ Beispielsweise: Eingangstüre, Kellertüre
 <!-- DOC -->
 ### Kanal deaktivieren zu Testzwecken
 
-Mit dieser Option kann der Kanal deaktiviert werden, ohne das die Konfiguriation verloren geht.
+Mit dieser Option kann der Kanal deaktiviert werden, ohne dass die Konfiguration verloren geht.
 
 <!-- DOCEND -->
-## Bluetooth Koppelung (Pairing)
+## Bluetooth Kopplung (Pairing)
 
-Die OpenKNX Steuerung muss einmalig mit dem Nuki Smartlock gekoppelt werden.
+Die OpenKNX Steuerung muss einmalig mit dem Nuki Smart Lock gekoppelt werden.
 
 <!-- DOC -->
 ### Abschnitt anzeigen
 
 Über diese Option kann der Pairing Abschnitt ein- und ausgeblendet werden.
 Da das Pairing normalerweise nur einmal erfolgt, wird nach dem Pairing dieser Abschnitt automatisch ausgeblendet.
-Dier kann hier aber erneut eingeblendet werden um z.B. nach einem Tausch des Nuki Smart Lock das Pairing erneut durchzuführen.
+Dieser Abschnitt kann hier aber erneut eingeblendet werden, um z.B. nach einem Tausch des Nuki Smart Lock das Pairing erneut durchzuführen.
 
 <!-- DOCEND -->
-### Bluetooth Koppelung durcgführen
+### Bluetooth Kopplung durchführen
 
 1) Gerät über die ETS programmieren
-2) Knopf am Smart Lock für 10 Sekunden drücken bis der Ring leuchtet
+2) Knopf am Smart Lock für 10 Sekunden drücken, bis der Ring leuchtet
 3) In der ETS mit 'Mit Smart Lock koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln.
 
 <!-- DOCEND -->
@@ -95,18 +95,18 @@ Aktiviert / deaktiviert das automatische Versperren.
 <!-- DOC HelpContext="LockAfterTime" -->
 #### nach
 
-Legt fest, nach welcher Zeit das Smart-Lock automatisch versperrt wird.
-Normalerweise wird diese Zeit deutlich länger konfiguriert, als die Zeit im Abschnitt OpenKNX Lock'n'Go die nur zum unmittelbaren verlassen des Raumes gedacht ist.
+Legt fest, nach welcher Zeit das Smart Lock automatisch versperrt wird.
+Normalerweise wird diese Zeit deutlich länger konfiguriert, als die Zeit im Abschnitt OpenKNX Lock'n'Go, die nur zum unmittelbaren Verlassen des Raumes gedacht ist.
 
 <!-- DOC -->
 #### Automatisch versperren Zeit
 
-Zeitangabe nach der das Schlos versperrt werden soll.
+Zeitangabe, nach der das Schloss versperrt werden soll.
 
 <!-- DOC -->
 #### Automatisch versperren Zeit Einheit
 
-Legt die Einheit in der die Zeitangabe für das automatisch versperren verwendet wird fest.
+Legt die Einheit fest, in der die Zeitangabe für das automatische Versperren verwendet wird.
 
 - Sekunden
 - Minuten
@@ -117,25 +117,25 @@ LockAfterTime
 <!-- DOC -->
 ### Verbleibend Count-Down verwenden
 
-Gibt an, ob am 'Verbleibend Offen" Gruppenobjekt für das autoamtische Versperren ein Count-Down ausgegeben werden soll.
+Gibt an, ob am 'Verbleibend Offen' Gruppenobjekt für das automatische Versperren ein Count-Down ausgegeben werden soll.
 
 <!-- DOC -->
 ### Versperren in der Nacht anders
 
 Mit dieser Einstellung kann festgelegt werden, dass in der Nacht das automatische Versperren mit anderen Einstellungen erfolgt.
 
-Die Verwendung getrennter Einstellungen ist nur möglich wenn im Abschnitt Nacht eine Konfiguration für die Auswahl des Nachmodus vorgenommen wurde.
+Die Verwendung getrennter Einstellungen ist nur möglich, wenn im Abschnitt Nacht eine Konfiguration für die Auswahl des Nachmodus vorgenommen wurde.
 
 <!-- DOC -->
 ### Versperren
 
-Legt fest, ob beim versperren der Schlüssel einmal oder zweimal gedreht wird.
-ACHTUNG: Manche Versicherungen verlangen ein doppeltes versperren.
+Legt fest, ob beim Versperren der Schlüssel einmal oder zweimal gedreht wird.
+ACHTUNG: Manche Versicherungen verlangen ein doppeltes Versperren.
 
 <!-- DOC -->
 ## OpenKNX Lock'n'Go
 
-Das OpenKNX Lock'n'Go ist gedacht zum unmittelbaren Verlassen und anschließende versperren des Schlosses.
+Das OpenKNX Lock'n'Go ist gedacht zum unmittelbaren Verlassen und anschließenden Versperren des Schlosses.
 Im Unterschied zum Nuki Lock'n'Go gibt es aber eine Reihe an zusätzlichen Einstellungen.
 
 Z.B. kann der Versperr-Count-Down gestoppt werden oder über einen KNX-Türkontakt unterbrochen werden.
@@ -157,14 +157,14 @@ Diese Zeit kann durch einen Türkontakt beim Öffnen der Tür unterbrochen werde
 <!-- DOC HelpContext="LocknGo-Zeit-Einheit"-->
 ### Wiederversperrzeit Eimheit
 
-Legt die Einheit in der die Zeitangabe für das wiederversperren verwendet wird fest.
+Legt die Einheit fest, in der die Zeitangabe für das Wiederversperren verwendet wird.
 
 - Sekunden
 - Minuten
 - Stunden
 
 <!-- DOC -->
-### Manuelles öffnen startet Lock'n'Go
+### Manuelles Öffnen startet Lock'n'Go
 
 Ist diese Option gesetzt, wird wenn das Schloss manuell durch drehen des Knopfes geöffnet wird, der Lock'n'Go Count-Down für das Wiederversperren gestartet.
 
@@ -172,38 +172,38 @@ Ist diese Option gesetzt, wird wenn das Schloss manuell durch drehen des Knopfes
 ### Öffnen über Nuki Taste startet Lock'n'Go
 
 Ist diese Option gesetzt, wird wenn das Schloss über die Taste am Nuki Smart Lock geöffnet wird, der Lock'n'Go Count-Down für das Wiederversperren gestartet.
-ACHTUNG: Das Funktioniert nur, wenn die Taste über die Nuki App mit Aufsperren belegt ist. 
+ACHTUNG: Das funktioniert nur, wenn die Taste über die Nuki App mit Aufsperren belegt ist. 
 Beim Nuki eigenen Lock'n'Go funktioniert diese Option nicht.
 
 <!-- DOC -->
-### Weiters EIN Signal am 'OpenKNX Lock'n'Go' Eingang
+### Weiteres EIN Telegramm am 'OpenKNX Lock'n'Go' Eingang
 
-Gibt an, was passiert soll, wenn über das 'OpenKNX Lock'n'Go' Gruppenobjekt bei geöffnetem Schloss passieren soll:
+Gibt an, was passieren soll, wenn über das 'OpenKNX Lock'n'Go' Gruppenobjekt bei geöffnetem Schloss ein Telegramm anliegt:
 
 - Nichts
 - Zeit neu starten
-  Die Wartzeit für das Versperren wird neu gestartet.
+  Die Wartezeit für das Versperren wird neu gestartet.
 - Versperren
   Das Schloss wird sofort ohne Wartezeit versperrt.
 - Dauerhaft entsperren
   Der Lock'n'Go Vorgang wird abgebrochen und das Schloss bleibt entriegelt.
 
 <!-- DOC -->
-### AUS Signal am OpenKNX Lock'n'Go Eingang
+### AUS Telegramm am OpenKNX Lock'n'Go Eingang
 
-Gibt an, ob ein AUS Signal am Lock'n'Go Eingang zum sofortigen Versperren führt:
+Gibt an, ob ein AUS Telegramm am Lock'n'Go Eingang zum sofortigen Versperren führt:
 
 Auswahl:
 
 - Nichts
-  Das Telegramm wird ingnoriert und das Schloss versperrt nach der eingestellten Wartezeit.
+  Das Telegramm wird ignoriert und das Schloss versperrt nach der eingestellten Wartezeit.
 - Versperren
   Ein AUS (0) Telegramm beendet das Lock'n'Go und versperrt das Schloss
 
 <!-- DOCEND -->
 ## Versperr-Count-Down
 
-Dieser Abschnitt dient zur Konfiguriation des Count-Downs bis zum versperren.
+Dieser Abschnitt dient zur Konfiguration des Count-Downs bis zum Versperren.
 
 <!-- DOC -->
 ### Objekt für Versperr-Count-Down
@@ -212,7 +212,7 @@ Für folgende Aktionen kann ein Count-Down auf einem Gruppenobjekt ausgegeben we
 
 - Nuki Lock'n'Go
 - OpenKNX Lock'n'Go
-- Automatischen Versperren, sofern 'Verbleibend Count-Down' im Abschnitt 'Versperren' konfiguriert ist
+- automatischen Versperren, sofern 'Verbleibend Count-Down' im Abschnitt 'Versperren' konfiguriert ist
 
 Als Option stehen folgende Werte bereit:
 
@@ -221,25 +221,25 @@ Als Option stehen folgende Werte bereit:
 - Sekunden
   Die Ausgabe am Objekt erfolgt in Sekunden.
 - Minuten
-  Die Ausgabe am Objekt erfolgt in Minuten.  
+  Die Ausgabe am Objekt erfolgt in Minuten.
 
 <!-- DOCEND -->
 ## Türkontakt
 
-Über einen KNX-Türkontakt kann das automatischen Versperren verhindert werden, solange die Türe geöffnet ist.
+Über einen KNX-Türkontakt kann das automatische Versperren verhindert werden, solange die Türe geöffnet ist.
 
 <!-- DOC -->
 ### KNX Türsensor 
 
-Mit dieser Option wird ein Gruppenobjekt für den Türkontakt und die Einstellungen für das Verhalten eingeblendet
+Mit dieser Option wird ein Gruppenobjekt für den Türkontakt und die Einstellungen für das Verhalten eingeblendet.
 
 <!-- DOC -->
-### Nach Tür schliessen
+### Nach Tür schließen
 
 Legt die Aktion fest, die nach dem Schließen der Tür ausgeführt wird
 
 - Versperrwartezeit fortsetzen
-  Die unterbrochen Zeit wird fortgesetzt
+  Die unterbrochene Zeit wird fortgesetzt
 - Versperrwartezeit neu starten
   Der ursprüngliche Versperr-Count-Down wird wieder gestartet 
 - Versperren nach Wartezeit
@@ -253,12 +253,12 @@ Legt die neue Wartezeit fest, die nach dem Schließen der Tür angewendet wird, 
 <!-- DOC -->
 ##### Wartezeit
 
-Zeit die gewartet wird bis die Tür versperrt wird.
+Zeit, die gewartet wird, bis die Tür versperrt wird.
 
 <!-- DOC -->
 ##### Wartezeit Einheit
 
-Einheit für die Wartzeit:
+Einheit für die Wartezeit:
 
 - Sekunden
 - Minuten
@@ -267,39 +267,39 @@ Einheit für die Wartzeit:
 <!-- DOC -->
 ### Einbruchalarm
 
-Ein unberechtigtest öffnen der Tür kann ein Alarm Telegramm auslösen.
+Ein unberechtigtes Öffnen der Tür kann ein Alarm Telegramm auslösen.
 
 - nicht aktiv
 - wenn Tür offen und Nuki versperrt
-  blendet dass Gruppenobjelkt 'Einbruchsalarm Aktiv' ein und gibt einen Alarm aus, wenn die Tür geöffnet (aufgebrochen) wird, obwohl das Schloss im versperrt Zustand ist.
-- wenn Tür offen und Nuki manuell geöffnet" Value="2" Id="%ENID%" />
-  blendet dass Gruppenobjelkt 'Einbruchsalarm Aktiv' ein und gibt einen Alarm aus, wenn die Tür geöffnet (aufgebrochen) wird, aber keine elektronische Öffnung erfolgt hat. 
+  blendet das Gruppenobjekt 'Einbruchsalarm Aktiv' ein und gibt einen Alarm aus, wenn die Tür geöffnet (aufgebrochen) wird, obwohl das Schloss im versperrten Zustand ist.
+- wenn Tür offen und Nuki manuell geöffnet
+  blendet das Gruppenobjekt 'Einbruchsalarm Aktiv' ein und gibt einen Alarm aus, wenn die Tür geöffnet (aufgebrochen) wird, aber keine elektronische Öffnung erfolgt ist. 
   ACHTUNG: Bei dieser Einstellung darf das Smart Lock nicht mehr über den Drehknopf geöffnet werden, da dies einen Alarm auslösen würde.
-  Jedoch hat die Einstellung den Vorteil, dass auch das Öffnen der Tür durch einen Schlüssel oder Dietrich der den am auf der Innenseite steckenden Schlüssel mitdreht, Alarm auslösen würde.
+  Jedoch hat die Einstellung den Vorteil, dass auch das Öffnen der Tür durch einen Schlüssel oder Dietrich, der den am auf der Innenseite steckenden Schlüssel mitdreht, Alarm auslösen würde.
 
 <!-- DOCEND -->
 ## Nacht
 
-In diesem Abschnitt wird festgelegt, wie die Steuerung erkennt ob es Nacht ist.
+In diesem Abschnitt wird festgelegt, wie die Steuerung erkennt, ob es Nacht ist.
 
 <!-- DOC -->
 ### Nacht
 
-Über diese Option wird festgelegt auf welche Art die Nachterkennung erfolgen soll:
+Über diese Option wird festgelegt, auf welche Art die Nachterkennung erfolgen soll:
 
 - Deaktiviert
 - Zeitfenster
   Die Beginnzeit und Endzeit für die Nacht kann festgelegt werden.
 - Objekt
-  Blendet ein Gruppenobjekt ein, über das ein Nacht (1), Tag (0) Telegram die Nacht vorgegeben wird.
-- Objekt UND Zeitfenster" Value="4" Id="%ENID%" />
-  Blendet ein Gruppenobjekt ein, über das ein Nacht (1), Tag (0) Telegram die Nacht vorgegeben wird.
-  Der Nachtmodus wird aber nur aktiviert, wenn das Nachsignal innerhalb des konfigurierten Zeitfensters emfpangen wird.
-- Objekt ODER Zeitfenster" Value="5" Id="%ENID%" />
-  Blendet ein Gruppenobjekt ein, über das ein Nacht (1), Tag (0) Telegram die Nacht vorgegeben wird.
-  Zusätzlich kann ein Zeitfenster für die Nacht festgelegt werden. Das Gerät schaltet im Zeitfenster oder beim Empfang des Nachtelegrams auf den Nachtmodus.
+  Blendet ein Gruppenobjekt ein, über das ein Nacht (1), Tag (0) Telegramm die Nacht vorgegeben wird.
+- Objekt UND Zeitfenster
+  Blendet ein Gruppenobjekt ein, über das ein Nacht (1), Tag (0) Telegramm die Nacht vorgegeben wird.
+  Der Nachtmodus wird aber nur aktiviert, wenn das Nachttelegramm innerhalb des konfigurierten Zeitfensters empfangen wird.
+- Objekt ODER Zeitfenster
+  Blendet ein Gruppenobjekt ein, über das ein Nacht (1), Tag (0) Telegramm die Nacht vorgegeben wird.
+  Zusätzlich kann ein Zeitfenster für die Nacht festgelegt werden. Das Gerät schaltet im Zeitfenster oder beim Empfang des Nachttelegrams auf den Nachtmodus.
 
-Hinweis: Wird die eine Einstellung mit Zeitfenster verwendet, muss die OpenKNX Steuerung über Zeit-Telegramme mit der aktuellen Uhrzeit versorgt werden.
+Hinweis: Wird eine Einstellung mit Zeitfenster verwendet, muss die OpenKNX Steuerung über Zeit-Telegramme mit der aktuellen Uhrzeit versorgt werden.
 
 <!-- DOC -->
 ### Nacht Auswahl

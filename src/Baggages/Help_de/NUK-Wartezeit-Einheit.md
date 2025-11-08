@@ -1,6 +1,6 @@
 ﻿### Wartezeit Einheit
 
-Einheit für die Wartzeit:
+Einheit für die Wartezeit:
 
 - Sekunden
 - Minuten

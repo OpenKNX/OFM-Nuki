@@ -1,4 +1,4 @@
 ﻿### Wartezeit
 
-Zeit die gewartet wird bis die Tür versperrt wird.
+Zeit, die gewartet wird, bis die Tür versperrt wird.
 
