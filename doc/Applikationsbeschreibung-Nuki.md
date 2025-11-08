@@ -49,7 +49,7 @@ Auswahl, welches Nuki Gerät gesteuert werden soll:
 - Nuki Opener
 
 <!-- DOCEND -->
-# 1-n Smart Lock
+# Smart Lock
 
 Auf dieser Seite werden die Konfiguration für die Steuerung festgelegt und das Bluetooth Pairing durchgeführt.
 
@@ -340,4 +340,34 @@ Legt fest, welche Aktion beim Ende der Nacht ausgeführt werden soll:
 - 2-fach versperren
 - entsperren
 
+<!-- DOCEND -->
+# Opener
 
+Auf dieser Seite werden die Konfiguration für die Steuerung festgelegt und das Bluetooth Pairing durchgeführt.
+
+### Bezeichnung
+
+Hier kann die Bezeichnung des Gerätes die in der Übersicht vergeben wurde, ebenfalls angepasst werden.
+Beispielsweise: Eingangstüre, Kellertüre
+
+### Kanal deaktivieren zu Testzwecken
+
+Mit dieser Option kann der Kanal deaktiviert werden, ohne dass die Konfiguration verloren geht.
+
+## Bluetooth Kopplung (Pairing)
+
+Die OpenKNX Steuerung muss einmalig mit dem Nuki Opener gekoppelt werden.
+
+<!-- DOC -->
+### Abschnitt anzeigen
+
+Über diese Option kann der Pairing Abschnitt ein- und ausgeblendet werden.
+Da das Pairing normalerweise nur einmal erfolgt, wird nach dem Pairing dieser Abschnitt automatisch ausgeblendet.
+Dieser Abschnitt kann hier aber erneut eingeblendet werden, um z.B. nach einem Tausch des Nuki Opener das Pairing erneut durchzuführen.
+
+<!-- DOCEND -->
+### Bluetooth Kopplung durchführen
+
+1) Gerät über die ETS programmieren
+2) Knopf am Opener für 10 Sekunden drücken
+3) In der ETS mit 'Mit Opener koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln.
