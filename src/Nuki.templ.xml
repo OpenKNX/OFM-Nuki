@@ -91,9 +91,9 @@
                 <!-- End night action-->
                 <Parameter Id="%AID%_UP-%TT%%CC%023" Offset="16" BitOffset="4" ParameterType="%AID%_PT-NUKNightAction" Name="CH%C%NightEndAction" Text="Aktion bei Nachtende" Value="0" />     
                 <!-- Manual open start OpenKNX Lock'n'go timer -->
-                <Parameter Id="%AID%_UP-%TT%%CC%027" Offset="17" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByManual" Text="Manuelles Öffnen startet Lock'n'Go" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%%CC%027" Offset="17" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByManual" Text="Manuelles Entsperren startet Lock'n'Go" Value="0" />
                 <!-- Nuki button open start OpenKNX Lock'n'go timer -->
-                <Parameter Id="%AID%_UP-%TT%%CC%028" Offset="17" BitOffset="1" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByButton" Text="Öffnen über Nuki Taste startet Lock'n'Go" Value="0" /> 
+                <Parameter Id="%AID%_UP-%TT%%CC%028" Offset="17" BitOffset="1" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByButton" Text="Entsperren über Nuki Taste startet Lock'n'Go" Value="0" /> 
                 <!-- Use count down for autolock -->
                 <Parameter Id="%AID%_UP-%TT%%CC%029" Offset="17" BitOffset="2" ParameterType="%AID%_PT-NUKUseCountDownForAutoLock" Name="CH%C%UseCountDownForAutoLock" Text="Verbleibend Count-Down verwenden" Value="0" /> 
                 <!-- ^^^ need 2 bits ^^^^-->
