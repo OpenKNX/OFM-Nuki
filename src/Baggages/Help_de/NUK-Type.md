@@ -1,6 +1,6 @@
 ﻿### Type
 
-Optionen:
+Auswahl welches Nuki Geräte gesteuert werden soll:
 
 - Deaktiviert
 - Nuki Lock
