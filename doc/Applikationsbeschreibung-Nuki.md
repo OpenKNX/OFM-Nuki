@@ -17,7 +17,7 @@ Kompatibilität:
 - Nuki Smart Lock 4.0 Pro
 - Nuki Opener
 
-Achtung: Nuki Smart Lock 5.0 ist derzeit nicht unterstützt.
+Achtung: Nuki Smart Lock 5.0 ist derzeit nicht unterstützt, da dieses keine Statusänderungen über Bluetooth zur Verfügung stellt.
 
 # Basiseinstellungen
 

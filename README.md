@@ -1,24 +1,35 @@
 # OFM-Nuki
 
-Dies ist ein Modul zur Steuerung eines Nuki Schlosses
+Dies ist ein Modul zur Steuerung eines Nuki Smart Lock oder eines Nuki Opener.
+
+Kompatibilität:
+- Nuki Smart Lock 1.0
+- Nuki Smart Lock 2.0
+- Nuki Smart Lock 3.0
+- Nuki Smart Lock 3.0 Pro
+- Nuki Smart Lock 4.0
+- Nuki Smart Lock 4.0 Pro
+- Nuki Opener
+
+Achtung: Nuki Smart Lock 5.0 ist derzeit nicht unterstützt, da dieses keine Statusänderungen über Bluetooth zur Verfügung stellt.
 
 ## Features
 
 - Aufsperren
 - Zusperren
-- Lasche Ziehen
+- Lasche ziehen
 - Lock 'n' go
 
-## Hardware Unterstützung
+## Hardware-Unterstützung
 
-|Prozessor | Status | Anmerkung                     |
-|----------|--------|-------------------------------|
-|ESP32     | Development |                               |
+| Prozessor | Status      | Anmerkung |
+|-----------|-------------|-----------|
+| ESP32     | Beta.       |           |
 
 
 ## Einbindung in die Anwendung
 
-In das Anwendungs XML muss OFM-Network (oder OFM-WLAN) und das OFM-InternetWeatherModule aufgenommen werden:
+In das Anwendungs-XML müssen OFM-Network (oder OFM-WLAN) und das OFM-InternetWeatherModule aufgenommen werden:
 
 ```xml
   
@@ -33,7 +44,7 @@ In das Anwendungs XML muss OFM-Network (oder OFM-WLAN) und das OFM-InternetWeath
   </op:define>
 ```
 
-**Hinweis:** Pro Kanal werden XX KO's benötigt. Dies muss bei nachfolgenden Modulen bei KoOffset und KoSingleOffset entsprechend berücksichtigt werden.
+**Hinweis:** Pro Kanal werden XX KOs benötigt. Dies muss bei nachfolgenden Modulen bei KoOffset und KoSingleOffset entsprechend berücksichtigt werden.
 
 ```
 [...]
@@ -47,6 +58,10 @@ void setup()
     [...]
 }
 ```
+
+### Applikationsbeschreibung
+
+Die Applikationsbeschreibung ist [hier](doc/Applikationsbeschreibung-Nuki.md) zu finden. 
 
 ## Lizenz
 
