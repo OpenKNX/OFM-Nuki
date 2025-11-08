@@ -3,8 +3,8 @@
 
 # Applikationsbeschreibung Nuki
 
-Über diese Anwendung kann ein Nuki Smart Lock oder ein Nuki Opener über Bluetooth von dem KNX System gesteuert werden.
-Es müssen sich daher die Nuki Geräte in Bluetooth Reichweite befinden.
+Über diese Anwendung können bis zu 10 Nuki Smart Lock oder Nuki Opener über Bluetooth von dem KNX System gesteuert werden.
+Es müssen sich die Nuki Geräte in Bluetooth Reichweite befinden.
 
 ACHTUNG: Die Anwendung kann nicht zusammen mit der Nuki Bridge verwendet werden.
 
