@@ -292,10 +292,10 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
         }
         KoNUK_LockState.valueCompare((uint8_t) _keyTurnerState.lockState, DPT_Value_1_Ucount);
         _updateTextState = true;
-        if ((_keyTurnerState.lockState == NukiLock::LockState::UnlockedLnga ||
+        if ((_keyTurnerState.lockState == NukiLock::LockState::Unlocking ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlocked ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlatching ||
-            _keyTurnerState.lockState == NukiLock::LockState::Unlatching) &&
+            _keyTurnerState.lockState == NukiLock::LockState::Unlatched) &&
             ((_keyTurnerState.trigger == NukiLock::Trigger::Manual && ParamNUK_CHLockNGoByManual) ||
             (_keyTurnerState.trigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton)) && 
             _countDownType != NukiCountDownType::NukiCountDownType_OpenKNXLockNGo &&
