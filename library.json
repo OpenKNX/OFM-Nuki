@@ -23,8 +23,8 @@
             "version": "https://github.com/vinmenn/Crc16#719a7a1d032cd68f5ef2c07edbee891afe770dc8"
         },
         {
-            "name": "BleScanner",
-            "version": "https://github.com/I-Connect/BleScanner#4dd010e6d91869a0f994c78ae61e23ab66e5f8b6"
+             "name": "BleScanner",
+             "version": "https://github.com/mgeramb/BleScanner#ca286d1cef0638ead12b379a5b14766dc59dff1d"
         },
         {
             "name": "NukiBleEsp32",
