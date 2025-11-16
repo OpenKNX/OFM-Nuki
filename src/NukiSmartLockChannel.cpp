@@ -340,6 +340,7 @@ void NukiSmartLockChannel::checkAndStartAutoLock()
 void NukiSmartLockChannel::initialize(BleScanner::Scanner& scanner)
 {
     NukiChannel::initialize(scanner);
+    _bleScanner = &scanner;
     _smartLock.setEventHandler(this);
     //_smartLock.registerLogger(&nukiLogger);
     _smartLock.registerBleScanner(&scanner);
@@ -640,19 +641,33 @@ bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo
 
 bool NukiSmartLockChannel::pairDevice()
 {
+    logInfoP("Unpair Nuki Smart Lock");
     _smartLock.unPairNuki();
-    if (_smartLock.pairNuki() == Nuki::PairingResult::Success)
+    logInfoP("Pairing Nuki Smart Lock...");
+    _paired = false;
+
+    int counter = 60;
+    while (!_smartLock.isPairedWithLock()) 
     {
-        _paired = true;
-        logInfoP("Nuki Smart Lock paired");
-        return true;
+        if (_smartLock.pairNuki(Nuki::AuthorizationIdType::App) == Nuki::PairingResult::Success) 
+        {
+          
+            break;
+        }
+        counter--;
+        if (counter == 0)
+        {
+            logErrorP("Nuki Smart Lock pairing failed");
+            return false;
+        }
+        if (_bleScanner != nullptr)
+            _bleScanner->update();
+        vTaskDelay(500);
     }
-    else
-    {
-        _paired = _smartLock.isPairedWithLock();
-        logErrorP("Nuki Smart Lock pairing failed");
-        return false;
-    }
+    logInfoP("Nuki Smart Lock paired");
+    _paired = true;
+    return true;
+
 }
 
 void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
@@ -862,6 +877,9 @@ void NukiSmartLockChannel::loop1()
 
 void NukiSmartLockChannel::loop()
 {
+#ifndef OPENKNX_DUALCORE
+    loop1();
+#endif
     NukiChannel::loop();
     if (_updateTextState)
     {

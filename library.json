@@ -15,12 +15,20 @@
     },
     "dependencies": [
         {
+            "name": "NimBLE-Arduino",
+            "version": "h2zero/NimBLE-Arduino @ 2.3.6"
+        },
+        {
+            "name": "CRC16",
+            "version": "https://github.com/vinmenn/Crc16#719a7a1d032cd68f5ef2c07edbee891afe770dc8"
+        },
+        {
             "name": "BleScanner",
-            "version": "https://github.com/I-Connect/BleScanner.git"
+            "version": "https://github.com/I-Connect/BleScanner#4dd010e6d91869a0f994c78ae61e23ab66e5f8b6"
         },
         {
             "name": "NukiBleEsp32",
-            "version": "https://github.com/I-Connect/NukiBleEsp32.git"
+            "version": "https://github.com/I-Connect/NukiBleEsp32#e2edfa2cb4a36f7b3bf2f160f1b20fb075996ab7"
         }
     ]
 }

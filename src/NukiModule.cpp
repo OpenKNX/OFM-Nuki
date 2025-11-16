@@ -1,4 +1,5 @@
 #include "NukiModule.h"
+#include "BleScanner.h"
 #include "NukiConstants.h"
 #include "NukiSmartLockChannel.h"
 #include "NukiOpenerChannel.h"
@@ -60,7 +61,7 @@ void NukiModule::setup()
         logDebugP("Initialize channel %d", i);
         channel->initialize(*scanner);
     }
- }
+}
 
 void NukiModule::loop()
 {
@@ -68,7 +69,6 @@ void NukiModule::loop()
         scanner->update();
    
     NUKChannelOwnerModule::loop();
-   
 }
 
 bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId, uint8_t length, uint8_t *data, uint8_t *resultData, uint8_t &resultLength)

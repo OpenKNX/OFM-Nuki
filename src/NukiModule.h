@@ -1,11 +1,14 @@
 #pragma once
 #include "OpenKNX.h"
 #include "ChannelOwnerModule.h"
-#include "BleScanner.h"
 
 #if !defined(OPENKNX_DUALCORE)
-#error "NukiModule requires OPENKNX_DUALCORE to be enabled"
+#warning "It is strongly recommended to enable OPENKNX_DUALCORE for NukiModule"
 #endif
+
+namespace BleScanner {
+    class Scanner;
+}
 
 class NukiModule : public NUKChannelOwnerModule
 {

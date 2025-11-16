@@ -33,6 +33,7 @@ class NukiSmartLockChannel : public NukiChannel
     bool _updateTextState = false;
     long _remaining = 0;
     long _remainingSeconds = 0;
+    BleScanner::Scanner* _bleScanner = nullptr;
 
  
     NukiLock::LockAction getCurrentValidConfiguredLockAction();
@@ -52,7 +53,11 @@ public:
     virtual void initialize(BleScanner::Scanner& scanner) override;
     virtual void setup() override;
     virtual void loop() override;
+#ifndef OPENKNX_DUALCORE
+    virtual void loop1();
+#else
     virtual void loop1() override;
+#endif
     void updateStates(unsigned long now);
     virtual bool pairDevice() override;
     virtual void processInputKo(GroupObject &ko) override;

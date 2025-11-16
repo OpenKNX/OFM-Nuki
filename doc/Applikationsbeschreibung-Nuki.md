@@ -164,12 +164,12 @@ Legt die Einheit fest, in der die Zeitangabe für das Wiederversperren verwendet
 - Stunden
 
 <!-- DOC -->
-### Manuelles Entsperren startet Lock'n'Go
+### Manuelles Öffnen startet Lock'n'Go
 
 Ist diese Option gesetzt, wird wenn das Schloss manuell durch drehen des Knopfes geöffnet wird, der Lock'n'Go Count-Down für das Wiederversperren gestartet.
 
 <!-- DOC -->
-### Entsperren über Nuki Taste startet Lock'n'Go
+### Öffnen über Nuki Taste startet Lock'n'Go
 
 Ist diese Option gesetzt, wird wenn das Schloss über die Taste am Nuki Smart Lock geöffnet wird, der Lock'n'Go Count-Down für das Wiederversperren gestartet.
 ACHTUNG: Das funktioniert nur, wenn die Taste über die Nuki App mit Aufsperren belegt ist. 
@@ -358,14 +358,14 @@ Mit dieser Option kann der Kanal deaktiviert werden, ohne dass die Konfiguration
 
 Die OpenKNX Steuerung muss einmalig mit dem Nuki Opener gekoppelt werden.
 
-
+<!-- DOC -->
 ### Abschnitt anzeigen
 
 Über diese Option kann der Pairing Abschnitt ein- und ausgeblendet werden.
 Da das Pairing normalerweise nur einmal erfolgt, wird nach dem Pairing dieser Abschnitt automatisch ausgeblendet.
-Dieser Abschnitt kann hier aber erneut eingeblendet werden, um z.B. nach einem Tausch des Nuki Gerätes das Pairing erneut durchzuführen.
+Dieser Abschnitt kann hier aber erneut eingeblendet werden, um z.B. nach einem Tausch des Nuki Opener das Pairing erneut durchzuführen.
 
-
+<!-- DOCEND -->
 ### Bluetooth Kopplung durchführen
 
 1) Gerät über die ETS programmieren
