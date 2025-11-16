@@ -210,6 +210,17 @@
               <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K14%" Name="CH%C%K14" ObjectSize="1 Bit" Text="" FunctionText="" CommunicationFlag="Enabled" ReadFlag="Disabled" WriteFlag="Disabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
               <!-- KO 15 -->
               <ComObject Id="%AID%_O-%TT%%CC%015" Number="%K15%" Name="CH%C%K15" ObjectSize="1 Bit" Text="" FunctionText="" CommunicationFlag="Enabled" ReadFlag="Disabled" WriteFlag="Disabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+            
+              <!-- Reservered for future use -->
+              <!-- KO 16 -->
+              <ComObject Id="%AID%_O-%TT%%CC%016" Number="%K16%" Name="CH%C%K16" ObjectSize="1 Bit" Text="" FunctionText="" CommunicationFlag="Enabled" ReadFlag="Disabled" WriteFlag="Disabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <!-- KO 17 -->
+              <ComObject Id="%AID%_O-%TT%%CC%017" Number="%K17%" Name="CH%C%K17" ObjectSize="1 Bit" Text="" FunctionText="" CommunicationFlag="Enabled" ReadFlag="Disabled" WriteFlag="Disabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <!-- KO 18 -->
+              <ComObject Id="%AID%_O-%TT%%CC%018" Number="%K18%" Name="CH%C%K18" ObjectSize="1 Bit" Text="" FunctionText="" CommunicationFlag="Enabled" ReadFlag="Disabled" WriteFlag="Disabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <!-- KO 19 -->
+              <ComObject Id="%AID%_O-%TT%%CC%019" Number="%K19%" Name="CH%C%K19" ObjectSize="1 Bit" Text="" FunctionText="" CommunicationFlag="Enabled" ReadFlag="Disabled" WriteFlag="Disabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+   
             </ComObjectTable>
             <ComObjectRefs>
 
