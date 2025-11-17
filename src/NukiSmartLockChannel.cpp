@@ -297,7 +297,9 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
             _keyTurnerState.lockState == NukiLock::LockState::Unlatching ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlatched) &&
             ((_keyTurnerState.trigger == NukiLock::Trigger::Manual && ParamNUK_CHLockNGoByManual) ||
-            (_keyTurnerState.trigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton)) && 
+            (_keyTurnerState.trigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton) ||
+            (_keyTurnerState.trigger == NukiLock::Trigger::Automatic && ParamNUK_CHLockNGoByAutoUnlock)
+            ) && 
             _countDownType != NukiCountDownType::NukiCountDownType_OpenKNXLockNGo &&
             _countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo &&
             ParamNUK_CHOpenKNXLockNgo) 
