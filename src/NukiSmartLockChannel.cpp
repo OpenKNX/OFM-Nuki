@@ -222,12 +222,13 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
     {
         _retryRequestKeyTurnerState = 0;
         logInfoP("Lock state: %d (%s)", _keyTurnerState.lockState, lockStateToString(_keyTurnerState.lockState));
+        logInfoP("Trigger: %d", (int) _keyTurnerState.trigger);
         logInfoP("Nuki time: %02d:%02d:%02d", (int) _keyTurnerState.currentTimeHour,
         (int) _keyTurnerState.currentTimeMinute, (int) _keyTurnerState.currentTimeSecond);
         logInfoP("Nuki timeoffset: %d", (int) _keyTurnerState.timeZoneOffset);
-        logInfoP("Batterie critical: %s", _smartLock.isBatteryCritical() ? "yes" : "no");
-        logInfoP("Batterie: %d%%",  (int) _smartLock.getBatteryPerc());
-        logInfoP("Lock'n'go timer: %d", (int) _keyTurnerState.lockNgoTimer);
+        logInfoP("Battery critical: %s", _smartLock.isBatteryCritical() ? "yes" : "no");
+        logInfoP("Battery: %d%%",  (int) _smartLock.getBatteryPerc());
+     
        
         KoNUK_BatteryState.valueCompare(_smartLock.getBatteryPerc(), DPT_Scaling);
         bool unlockingOrUnlocked = false;
@@ -298,7 +299,7 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
             _keyTurnerState.lockState == NukiLock::LockState::Unlatched) &&
             ((_keyTurnerState.trigger == NukiLock::Trigger::Manual && ParamNUK_CHLockNGoByManual) ||
             (_keyTurnerState.trigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton) ||
-            (_keyTurnerState.trigger == NukiLock::Trigger::Automatic && ParamNUK_CHLockNGoByAutoUnlock)
+            (_keyTurnerState.trigger == NukiLock::Trigger::System && ParamNUK_CHLockNGoByAutoUnlock)
             ) && 
             _countDownType != NukiCountDownType::NukiCountDownType_OpenKNXLockNGo &&
             _countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo &&
