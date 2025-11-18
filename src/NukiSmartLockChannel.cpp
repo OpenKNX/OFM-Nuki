@@ -212,7 +212,7 @@ const char* NukiSmartLockChannel::lockStateToString(NukiLock::LockState state)
     }
 }
 
-bool NukiSmartLockChannel::updateKeyTurnerState()
+bool NukiSmartLockChannel::updateKeyTurnerState(bool lockNGoTimerStartAllowed)
 {
     _lastKeyTurnerStateRequest = max(1UL, millis());
     _retryKeyTurnStateRequestMs = 600000*12; // 12 hours
@@ -220,15 +220,16 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
     Nuki::CmdResult result = _smartLock.requestKeyTurnerState(&_keyTurnerState);
     if (result == Nuki::CmdResult::Success)
     {
+        _keyTurnerStateInitialized = true;
         _retryRequestKeyTurnerState = 0;
         logInfoP("Lock state: %d (%s)", _keyTurnerState.lockState, lockStateToString(_keyTurnerState.lockState));
         logInfoP("Trigger: %d", (int) _keyTurnerState.trigger);
-        logInfoP("Nuki time: %02d:%02d:%02d", (int) _keyTurnerState.currentTimeHour,
-        (int) _keyTurnerState.currentTimeMinute, (int) _keyTurnerState.currentTimeSecond);
+        logInfoP("Last Lock Action Trigger: %d", (int)_keyTurnerState.lastLockActionTrigger);
+        logInfoP("Nuki time: %02d:%02d:%02d", (int) _keyTurnerState.currentTimeHour, (int) _keyTurnerState.currentTimeMinute, (int) _keyTurnerState.currentTimeSecond);
         logInfoP("Nuki timeoffset: %d", (int) _keyTurnerState.timeZoneOffset);
         logInfoP("Battery critical: %s", _smartLock.isBatteryCritical() ? "yes" : "no");
         logInfoP("Battery: %d%%",  (int) _smartLock.getBatteryPerc());
-     
+        logInfoP("Lock'n'Go start allowed: %s", lockNGoTimerStartAllowed ? "yes" : "no");
        
         KoNUK_BatteryState.valueCompare(_smartLock.getBatteryPerc(), DPT_Scaling);
         bool unlockingOrUnlocked = false;
@@ -293,13 +294,14 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
         }
         KoNUK_LockState.valueCompare((uint8_t) _keyTurnerState.lockState, DPT_Value_1_Ucount);
         _updateTextState = true;
-        if ((_keyTurnerState.lockState == NukiLock::LockState::Unlocking ||
+        if (lockNGoTimerStartAllowed &&
+            (_keyTurnerState.lockState == NukiLock::LockState::Unlocking ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlocked ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlatching ||
             _keyTurnerState.lockState == NukiLock::LockState::Unlatched) &&
-            ((_keyTurnerState.trigger == NukiLock::Trigger::Manual && ParamNUK_CHLockNGoByManual) ||
-            (_keyTurnerState.trigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton) ||
-            (_keyTurnerState.trigger == NukiLock::Trigger::System && ParamNUK_CHLockNGoByAutoUnlock)
+            ((_keyTurnerState.lastLockActionTrigger == NukiLock::Trigger::Manual && ParamNUK_CHLockNGoByManual) ||
+            (_keyTurnerState.lastLockActionTrigger == NukiLock::Trigger::Button && ParamNUK_CHLockNGoByButton) ||
+            (_keyTurnerState.lastLockActionTrigger == NukiLock::Trigger::System && ParamNUK_CHLockNGoByApp)
             ) && 
             _countDownType != NukiCountDownType::NukiCountDownType_OpenKNXLockNGo &&
             _countDownType != NukiCountDownType::NukiCountDownType_NukiLockNGo &&
@@ -471,11 +473,11 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                 // <Enumeration Text="Lasche ziehen" Value="1" Id="%ENID%" />
                 if (ParamNUK_CHLockNGoMode)
                 {
-                    _lockAction = NukiLock::LockAction::Unlock;
+                    _lockAction = NukiLock::LockAction::Unlatch;
                 }
                 else
                 {
-                    _lockAction = NukiLock::LockAction::Unlatch;
+                    _lockAction = NukiLock::LockAction::Unlock;
                 }
 
             }
@@ -677,8 +679,8 @@ void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
 {
     if (_paired)
     {
-        logDebugP("Notification received, updating keyturner state");
-        _retryKeyTurnStateRequestMs = 0;
+        logInfoP("Notification received, updating keyturner state");
+        _lastKeyTurnerStateRequest = 0;
     }
 }
 
@@ -810,7 +812,7 @@ void NukiSmartLockChannel::loop1()
         if (_lastKeyTurnerStateRequest == 0 || (millis() - _lastKeyTurnerStateRequest > _retryKeyTurnStateRequestMs))
         {
             logDebugP("Requesting keyturner state");
-            updateKeyTurnerState();
+            updateKeyTurnerState(_lastKeyTurnerStateRequest == 0 && _keyTurnerStateInitialized);
         }
         if (_lockAction != NukiLock::LockAction::Undefined)
         {

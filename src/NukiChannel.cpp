@@ -4,7 +4,7 @@ NukiChannel::NukiChannel(uint8_t channelIndex, const char* type) : Channel()
 {
     _channelIndex = channelIndex;
     _type = type;   
-    _deviceName = type + std::to_string(channelIndex + 1);
+    _deviceName = "OpenKNX " + std::to_string(channelIndex + 1);
 }
 
 const std::string NukiChannel::name()

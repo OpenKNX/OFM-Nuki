@@ -33,6 +33,7 @@ class NukiSmartLockChannel : public NukiChannel
     bool _updateTextState = false;
     long _remaining = 0;
     long _remainingSeconds = 0;
+    bool _keyTurnerStateInitialized = false;
     BleScanner::Scanner* _bleScanner = nullptr;
 
  
@@ -40,7 +41,7 @@ class NukiSmartLockChannel : public NukiChannel
     bool isNightTimeWindow();
     bool calculateIsNight();
     bool updateConfig();
-    bool updateKeyTurnerState();
+    bool updateKeyTurnerState(bool lockNGoTimerStartAllowed);
     const char* lockStateToString(NukiLock::LockState state);
     bool _initialized = false;
     void updateTextState();
