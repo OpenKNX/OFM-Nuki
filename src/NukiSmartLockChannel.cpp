@@ -731,7 +731,7 @@ void NukiSmartLockChannel::updateTextState()
       
     }
     else if (_doorOpen)
-        _textState = "Tür offen";
+        _textState = "T\xFCr offen";
     else if (!_smartLock.isPairedWithLock())
         _textState = "Nicht gekopp.";
     else if (!_initialized)
