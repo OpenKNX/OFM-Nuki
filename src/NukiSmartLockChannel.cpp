@@ -948,7 +948,8 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
                     {
                         // <Enumeration Text="Versperrwartezeit fortsetzen" Value="0" Id="%ENID%" />
                         // <Enumeration Text="Versperrwartezeit neu starten" Value="1" Id="%ENID%" />
-                        // <Enumeration Text="Versperren nach Wartezeit" Value="2" Id="%ENID%" />
+                        // <Enumeration Text="Versperren nach" Value="2" Id="%ENID%" />
+                        // <Enumeration Text="bei OpenKNX Lock'n'Go versperren nach"3" Id="%ENID%" />
                         switch (ParamNUK_CHDoorMode)
                         {
                             case 0: // continue
@@ -967,6 +968,24 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
                                 _lockTimerWaitTimeMs = ParamNUK_CHWaitTimeDelayTimeMS;
                                 logInfoP("Locking after %d", (int) (_lockTimerWaitTimeMs / 1000));
                                 _lockTimerStartTime = now;
+                                break;
+                             case 3: // lock after wait time time, if OpenKNX Lock'n'Go active
+                                if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
+                                {
+                                    _lockTimerWaitTimeMs = ParamNUK_CHWaitTimeDelayTimeMS;
+                                    logInfoP("Locking after %d", (int) (_lockTimerWaitTimeMs / 1000));
+                                    _lockTimerStartTime = now;
+                                }
+                                else
+                                {
+                                    logInfoP("Continuing OpenKNX Lock'n'Go timer");
+                                    if (_lockTimerWaitTimeMs > _lockTimerDuration)
+                                        _lockTimerWaitTimeMs = _lockTimerWaitTimeMs - _lockTimerDuration;
+                                    else
+                                        _lockTimerWaitTimeMs = 0;
+                                    _lockTimerStartTime = now; 
+                                    break;
+                                }
                                 break;
                         }
                     }

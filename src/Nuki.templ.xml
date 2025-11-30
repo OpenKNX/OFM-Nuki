@@ -538,7 +538,7 @@
                                 <!-- Door Mode -->
                                 <ParameterRefRef  IndentLevel="2" RefId="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00700" Cell="1,2" HelpContext="%DOC%" />
                                 <choose ParamRefId="%AID%_UP-%TT%%CC%007_R-%TT%%CC%00700">
-                                  <when test="2">
+                                  <when test="2 3">
                                     
                                     <!-- Wait time -->  
                                     <ParameterBlock Id="%AID%_PB-nnn" Name="f%C%WaitTime" Inline="true" Layout="Grid" HelpContext="NUK-WaitTime">

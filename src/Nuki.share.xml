@@ -23,7 +23,8 @@
 								<TypeRestriction Base="Value" SizeInBit="4">
 									<Enumeration Text="Versperrwartezeit fortsetzen" Value="0" Id="%ENID%" />
 									<Enumeration Text="Versperrwartezeit neu starten" Value="1" Id="%ENID%" />
-									<Enumeration Text="Versperren nach Wartezeit" Value="2" Id="%ENID%" />
+									<Enumeration Text="Versperren nach" Value="2" Id="%ENID%" />
+									<Enumeration Text="bei OpenKNX Lock'n'Go versperren nach" Value="3" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
 							<ParameterType Id="%AID%_PT-NUKLockNGoCountDownKo" Name="NUKLockNGoCountDownKo">
