@@ -488,7 +488,8 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
             {
                 // <Enumeration Text="Nichts" Value="0" Id="%ENID%" />
                 // <Enumeration Text="Versperren" Value="1" Id="%ENID%" />
-                // <Enumeration Text="Dauerhaft Entsperren" Value="2" Id="%ENID%" />
+                // <Enumeration Text="Dauerhaft entsperren wenn aktiv, sonst versperren" Value="2" Id="%ENID%" />
+                // <Enumeration Text="Dauerhaft entsperren wenn aktiv" Value="2" Id="%ENID%" />
                 switch (ParamNUK_CHLockNGoOff)
                 {
                     case 1:
@@ -496,10 +497,27 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                         _lockTimerWaitTimeMs = 0;
                         break;
                     case 2:
-                        logInfoP("OpenKNX Lock'n'Go OFF received via KNX, set to indefinite unlock");
-                        setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
-                        KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t) 0, DPT_Switch);
-                        checkAndStartAutoLock();
+                        if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
+                        {
+                            logInfoP("OpenKNX Lock'n'Go OFF received via KNX, set to indefinite unlock");
+                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                            KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t) 0, DPT_Switch);
+                            checkAndStartAutoLock();
+                        }
+                        else
+                        {
+                            logInfoP("OpenKNX Lock'n'Go OFF received via KNX, but not active, lock");
+                            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, 0);
+                        }
+                        break;
+                    case 3:
+                        if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
+                        {
+                            logInfoP("OpenKNX Lock'n'Go OFF received via KNX, set to indefinite unlock");
+                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                            KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t) 0, DPT_Switch);
+                            checkAndStartAutoLock();
+                        }
                         break;
                 }
             }

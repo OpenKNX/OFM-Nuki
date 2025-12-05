@@ -79,7 +79,8 @@
 								<TypeRestriction Base="Value" SizeInBit="2">
 									<Enumeration Text="Nichts" Value="0" Id="%ENID%" />
 									<Enumeration Text="Versperren" Value="1" Id="%ENID%" />
-									<Enumeration Text="Dauerhaft entsperren" Value="2" Id="%ENID%" />
+									<Enumeration Text="Dauerhaft entsperren wenn aktiv, sonst versperren" Value="2" Id="%ENID%" />
+									<Enumeration Text="Dauerhaft entsperren wenn aktiv" Value="3" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
 
