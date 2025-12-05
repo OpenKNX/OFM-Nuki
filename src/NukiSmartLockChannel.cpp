@@ -464,6 +464,7 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                          case 3:
                             logInfoP("OpenKNX Lock'n'Go set to indefinite unlock");
                             setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                            KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t) 0, DPT_Switch);
                             checkAndStartAutoLock();
                             break;
                     }
@@ -497,6 +498,7 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                     case 2:
                         logInfoP("OpenKNX Lock'n'Go OFF received via KNX, set to indefinite unlock");
                         setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                        KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t) 0, DPT_Switch);
                         checkAndStartAutoLock();
                         break;
                 }
