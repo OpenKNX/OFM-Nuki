@@ -7,7 +7,7 @@ enum NukiCountDownType {
     NukiCountDownType_NotRunning = 0,
     NukiCountDownType_AutoLock = 1,
     NukiCountDownType_NukiLockNGo = 2,
-    NukiCountDownType_OpenKNXLockNGo = 3
+    NukiCountDownType_OpenKNXLockNGo = 3,
 };
 
 class NukiSmartLockChannel : public NukiChannel
@@ -48,6 +48,7 @@ class NukiSmartLockChannel : public NukiChannel
     void startLockNGoCloseTimer();
     bool useCountDownKoAndStateText();
     void checkAndStartAutoLock();
+    void setLockTimer(NukiCountDownType type, unsigned long waitTime);
   
 public:
     NukiSmartLockChannel(uint8_t _channelIndex);

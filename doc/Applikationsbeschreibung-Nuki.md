@@ -120,7 +120,7 @@ LockAfterTime
 Gibt an, ob am 'Verbleibend Offen' Gruppenobjekt für das automatische Versperren ein Count-Down ausgegeben werden soll.
 
 <!-- DOC -->
-### Versperren in der Nacht anders
+### In der Nacht andere Versperreinstellungen
 
 Mit dieser Einstellung kann festgelegt werden, dass in der Nacht das automatische Versperren mit anderen Einstellungen erfolgt.
 
@@ -193,6 +193,7 @@ Gibt an, was passieren soll, wenn über das 'OpenKNX Lock'n'Go' Gruppenobjekt be
   Das Schloss wird sofort ohne Wartezeit versperrt.
 - Dauerhaft entsperren
   Der Lock'n'Go Vorgang wird abgebrochen und das Schloss bleibt entriegelt.
+  Wenn automatisch Versperren eingeschalten ist, wird der Count Down für das automatisch versperren gestartet
 
 <!-- DOC -->
 ### AUS Telegramm am OpenKNX Lock'n'Go Eingang
@@ -205,6 +206,9 @@ Auswahl:
   Das Telegramm wird ignoriert und das Schloss versperrt nach der eingestellten Wartezeit.
 - Versperren
   Ein AUS (0) Telegramm beendet das Lock'n'Go und versperrt das Schloss
+- Dauerhaft entsperren
+  Ein AUS (0) Telegramm beendet das Lock'n'Go und lässt das Schloss entriegelt. 
+  Wenn automatisch Versperren eingeschalten ist, wird der Count Down für das automatisch versperren gestartet.
 
 <!-- DOCEND -->
 ## Versperr-Count-Down

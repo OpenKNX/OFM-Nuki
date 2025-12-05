@@ -8,4 +8,7 @@ Auswahl:
   Das Telegramm wird ignoriert und das Schloss versperrt nach der eingestellten Wartezeit.
 - Versperren
   Ein AUS (0) Telegramm beendet das Lock'n'Go und versperrt das Schloss
+- Dauerhaft entsperren
+  Ein AUS (0) Telegramm beendet das Lock'n'Go und lässt das Schloss entriegelt. 
+  Wenn automatisch Versperren eingeschalten ist, wird der Count Down für das automatisch versperren gestartet.
 

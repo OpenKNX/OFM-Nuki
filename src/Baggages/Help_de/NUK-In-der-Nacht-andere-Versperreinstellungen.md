@@ -1,4 +1,4 @@
-﻿### Versperren in der Nacht anders
+﻿### In der Nacht andere Versperreinstellungen
 
 Mit dieser Einstellung kann festgelegt werden, dass in der Nacht das automatische Versperren mit anderen Einstellungen erfolgt.
 
