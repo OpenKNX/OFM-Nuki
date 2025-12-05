@@ -313,7 +313,7 @@ bool NukiSmartLockChannel::updateKeyTurnerState(bool lockNGoTimerStartAllowed)
             ParamNUK_CHOpenKNXLockNgo) 
         {
             logInfoP("Starting OpenKNX Lock'n'Go timer");
-            startLockNGoCloseTimer();
+            startOpenKNXLockNGoCloseTimer();
         }
     }
     else
@@ -471,7 +471,7 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
                     return;
                 }
                 
-                startLockNGoCloseTimer();
+                startOpenKNXLockNGoCloseTimer();
                 // <Enumeration Text="Entsperren" Value="0" Id="%ENID%" />
                 // <Enumeration Text="Lasche ziehen" Value="1" Id="%ENID%" />
                 if (ParamNUK_CHLockNGoMode)
@@ -518,7 +518,7 @@ void NukiSmartLockChannel::processInputKo(GroupObject &ko)
     }
 }
 
-void NukiSmartLockChannel::startLockNGoCloseTimer()
+void NukiSmartLockChannel::startOpenKNXLockNGoCloseTimer()
 {
     setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, ParamNUK_CHLockNGoDelayTimeMS);
     _doorOpenBreak = _doorOpen;

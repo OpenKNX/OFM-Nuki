@@ -45,7 +45,7 @@ class NukiSmartLockChannel : public NukiChannel
     const char* lockStateToString(NukiLock::LockState state);
     bool _initialized = false;
     void updateTextState();
-    void startLockNGoCloseTimer();
+    void startOpenKNXLockNGoCloseTimer();
     bool useCountDownKoAndStateText();
     void checkAndStartAutoLock();
     void setLockTimer(NukiCountDownType type, unsigned long waitTime);
