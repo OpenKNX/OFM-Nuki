@@ -264,6 +264,10 @@
               <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01400" RefId="%AID%_O-%TT%%CC%014" ObjectSize="1 Bit" DatapointType="DPST-1-5" Text="{{0:Nuki %C%}}: Einbruchsalarm Aktiv" FunctionText="Nuki %C%: Ausgang, Status, Inaktiv=0 / Aktiv=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Night -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" RefId="%AID%_O-%TT%%CC%015" ObjectSize="1 Bit" DatapointType="DPST-1-24" Text="{{0:Nuki %C%}}: Nacht Eingang" FunctionText="Nuki %C%: Eingang, Tag=0 / Nacht=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
+              <!-- KO Unlocking -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%016_R-%TT%%CC%01600" RefId="%AID%_O-%TT%%CC%016" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="{{0:Nuki %C%}}: Entriegeln durch Aktor aktiv" FunctionText="Nuki %C%: Ausgang, Inaktiv=0 / Aktiv=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <!-- KO Locking -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%017_R-%TT%%CC%01700" RefId="%AID%_O-%TT%%CC%017" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="{{0:Nuki %C%}}: Verriegeln durch Aktor aktiv" FunctionText="Nuki %C%: Ausgang, Inaktiv=0 / Aktiv=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
 
               <!-- *** Nuki Openener *** -->
               <!-- Batterie leer -->
@@ -620,6 +624,13 @@
                                 <ComObjectRefRef RefId="%AID%_O-%TT%%CC%015_R-%TT%%CC%01500" />
                               </when>
                             </choose>
+
+                            <!-- KO Unlocking -->
+                            <ComObjectRefRef RefId="%AID%_O-%TT%%CC%016_R-%TT%%CC%01600" />
+                            <!-- KO Locking -->
+                            <ComObjectRefRef RefId="%AID%_O-%TT%%CC%017_R-%TT%%CC%01700" />
+
+        
                              
                           </ParameterBlock>
                         </when>

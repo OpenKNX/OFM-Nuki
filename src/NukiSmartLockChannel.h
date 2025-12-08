@@ -12,11 +12,19 @@ enum NukiCountDownType {
 
 class NukiSmartLockChannel : public NukiChannel
 {
+    static const unsigned long KeyTurnTimeMs;
     unsigned long _retryInitialization = 0;
     int _retryRequestKeyTurnerState = 0;
     unsigned long _lastKeyTurnerStateRequest = 0;
     NukiLock::LockAction _lockAction = NukiLock::LockAction::Undefined;
     unsigned long _retryKeyTurnStateRequestMs = 0;
+    unsigned long _lockActionTimerStart = 0;
+    unsigned long _lockActionTimerWaitTime = 0;
+    void startLockActionTimer(bool locking, unsigned long waitTimeMs);
+    void stopLockActionTimer();
+
+    
+
     NukiLock::NukiLock _smartLock;
     NukiLock::Config _config = {0};
     bool _paired = false;
@@ -38,6 +46,7 @@ class NukiSmartLockChannel : public NukiChannel
 
  
     NukiLock::LockAction getCurrentValidConfiguredLockAction();
+    void lockAction(NukiLock::LockAction action);
     bool isNightTimeWindow();
     bool calculateIsNight();
     bool updateConfig();
