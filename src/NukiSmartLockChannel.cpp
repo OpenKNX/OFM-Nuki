@@ -80,7 +80,7 @@
 #define NUK_KoLocking NUK_KoCHK17
 
 
-const unsigned long NukiSmartLockChannel::KeyTurnTimeMs = 2000;
+const unsigned long NukiSmartLockChannel::KeyTurnTimeMs = 2500;
 
 NukiSmartLockChannel::NukiSmartLockChannel(uint8_t _channelIndex) : NukiChannel(_channelIndex, "SmartLock"),
   _smartLock(_deviceName, 2025000 + _channelIndex)
