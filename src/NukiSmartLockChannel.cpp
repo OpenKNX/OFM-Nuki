@@ -853,6 +853,7 @@ void NukiSmartLockChannel::startLockActionTimer(bool locking, unsigned long acti
     }
     else
     {
+        KoNUK_UnLockState.valueCompare((uint8_t) 1, DPT_Switch);
         KoNUK_Locking.valueCompare((uint8_t) 0, DPT_Switch);
         KoNUK_Unlocking.valueCompare((uint8_t) 1, DPT_Switch);
     }
