@@ -762,7 +762,6 @@ void NukiSmartLockChannel::updateTextState()
 {
     if (useCountDownKoAndStateText())
     {
-        
         _textState = "Offen ";
         if (_remainingSeconds >= 60)
         {
@@ -771,7 +770,7 @@ void NukiSmartLockChannel::updateTextState()
                 _textState += std::string(remain.length(), '-');
             else
                 _textState += remain;
-            _textState += " Min.";
+            _textState += " min";
         }
         else
         {
@@ -780,9 +779,8 @@ void NukiSmartLockChannel::updateTextState()
                 _textState += std::string(remain.length(), '-');
             else
                 _textState += remain;
-            _textState += " Sek.";
+            _textState += " s";
         }
-      
     }
     else if (_doorOpen)
         _textState = "T\xFCr offen";
