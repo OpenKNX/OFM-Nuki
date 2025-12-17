@@ -764,16 +764,22 @@ void NukiSmartLockChannel::updateTextState()
     {
         
         _textState = "Offen ";
-        if (_doorOpenBreak)
-            _textState += " --";
-        else if (_remainingSeconds >= 60)
+        if (_remainingSeconds >= 60)
         {
-            _textState += std::to_string((int) (_remainingSeconds + 59) / 60);
+            auto remain = std::to_string((int) (_remainingSeconds + 59) / 60);
+            if (_doorOpenBreak)
+                _textState += std::string(remain.length(), '-');
+            else
+                _textState += remain;
             _textState += " Min.";
         }
         else
         {
-             _textState += std::to_string(_remainingSeconds);
+             auto remain = std::to_string(_remainingSeconds);
+             if (_doorOpenBreak)
+                _textState += std::string(remain.length(), '-');
+            else
+                _textState += remain;
             _textState += " Sek.";
         }
       
