@@ -60,10 +60,6 @@ void NUKChannelOwnerModule::setup()
                 channel->setup(true);
                 logIndentDown();
 
-                logInfoP("Setup channel %d - setup()", _channelIndex);  
-                logIndentUp();
-                channel->setup();
-                logIndentDown();
             }
 
         }

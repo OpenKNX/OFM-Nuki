@@ -176,9 +176,9 @@ ACHTUNG: Das funktioniert nur, wenn die Taste über die Nuki App mit Aufsperren 
 Beim Nuki eigenen Lock'n'Go funktioniert diese Option nicht.
 
 <!-- DOC -->
-### Entsperren über Nuki App startet Lock'n'Go
+### Entsperren über Nuki App oder Schlüssel startet Lock'n'Go
 
-Ist diese Option gesetzt, wird wenn das Schloss über die Nuki App geöffnet wird (auch bei Auto Unlock), der Lock'n'Go Count-Down für das Wiederversperren gestartet.
+Ist diese Option gesetzt, wird wenn das Schloss über die Nuki App (auch bei Auto Unlock) oder mit Schlüssel geöffnet wird, der Lock'n'Go Count-Down für das Wiederversperren gestartet.
 
 
 <!-- DOC -->

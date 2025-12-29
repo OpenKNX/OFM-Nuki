@@ -64,16 +64,16 @@
                 <!-- Door mode -->
                 <Parameter Id="%AID%_UP-%TT%%CC%007" Offset="8" BitOffset="4" ParameterType="%AID%_PT-NUKDoorMode" Name="CH%C%DoorMode" Text="Nach Tür schließen" Value="0" />
 
-                <!-- Auto lock DelayBase-->
-                <Parameter Id="%AID%_UP-%TT%%CC%025" Offset="9" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
-                <!-- Auto lock DelayTime -->
-                <Parameter Id="%AID%_UP-%TT%%CC%026" Offset="9" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockDelayTime" Text="Automatisch versperren Zeit" Value="30" />
+                <!-- Auto lock night DelayBase-->
+                <Parameter Id="%AID%_UP-%TT%%CC%025" Offset="9" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockNightDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
+                <!-- Auto lock night DelayTime -->
+                <Parameter Id="%AID%_UP-%TT%%CC%026" Offset="9" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockNightDelayTime" Text="Automatisch versperren Zeit" Value="30" />
                 <!-- ^^^ need 2 bytes -->
 
-                <!-- Auto lock night DelayBase-->
-                <Parameter Id="%AID%_UP-%TT%%CC%008" Offset="11" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockNightDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
-                <!-- Auto lock night DelayTime -->
-                <Parameter Id="%AID%_UP-%TT%%CC%009" Offset="11" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockNightDelayTime" Text="Automatisch versperren Zeit" Value="15" />
+                <!-- Auto lock DelayBase-->
+                <Parameter Id="%AID%_UP-%TT%%CC%008" Offset="11" BitOffset="0" ParameterType="%AID%_PT-DelayBase" Name="CH%C%AutoLockDelayBase" Text="Automatisch versperren Zeit Einheit" Value="1" />
+                <!-- Auto lock DelayTime -->
+                <Parameter Id="%AID%_UP-%TT%%CC%009" Offset="11" BitOffset="2" ParameterType="%AID%_PT-DelayTimeMin1" Name="CH%C%AutoLockDelayTime" Text="Automatisch versperren Zeit" Value="15" />
                 <!-- ^^^ need 2 bytes -->
              
 
@@ -104,7 +104,7 @@
                 <Parameter Id="%AID%_UP-%TT%%CC%032" Offset="17" BitOffset="6" ParameterType="%AID%_PT-NUKLockNGoOff" Name="CH%C%LockNGoOff" Text="AUS Telegramm am 'OpenKNX Lock'n'Go' Eingang" Value="1" /> 
                 <!-- ^^^ need 2 bits ^^^^-->
                 <!-- Auto Unlock open start OpenKNX Lock'n'go timer -->
-                <Parameter Id="%AID%_UP-%TT%%CC%033" Offset="18" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByApp" Text="Entsperren über Nuki App startet Lock'n'Go" Value="0" /> 
+                <Parameter Id="%AID%_UP-%TT%%CC%033" Offset="18" BitOffset="0" ParameterType="%AID%_PT-CheckBox" Name="CH%C%LockNGoByApp" Text="Entsperren über Nuki App oder Schlüssel startet Lock'n'Go" Value="0" /> 
                 <!-- 7 bits free -->
               </Union>
               <!-- Next parameter Id="%AID%_UP-%TT%%CC%034"-->

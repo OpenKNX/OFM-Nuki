@@ -354,7 +354,7 @@ bool NukiSmartLockChannel::updateKeyTurnerState(bool lockNGoTimerStartAllowed)
 void NukiSmartLockChannel::checkAndStartAutoLock()
 {
     if (((ParamNUK_CHLockModeNightEnable && (_isNight ? ParamNUK_CHAutoLockNight : ParamNUK_CHAutoLock)) ||
-            (!ParamNUK_CHLockModeNightEnable && ParamNUK_CHAutoLockNight)) &&
+            (!ParamNUK_CHLockModeNightEnable && ParamNUK_CHAutoLock)) &&
         _lockTimerStartTime == 0 && 
         _keyTurnerState.lockState != NukiLock::LockState::Locked && 
         _keyTurnerState.lockState != NukiLock::LockState::Locking)
@@ -378,7 +378,7 @@ void NukiSmartLockChannel::initialize(BleScanner::Scanner& scanner)
 }
 
 void NukiSmartLockChannel::setup()
-{
+{ 
     NukiChannel::setup();
     if (ParamNUK_CHKnxDoorSensor && !KoNUK_DoorOpenFeedback.initialized())
         KoNUK_DoorOpenFeedback.requestObjectRead();
