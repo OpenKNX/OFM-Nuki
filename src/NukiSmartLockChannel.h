@@ -18,6 +18,7 @@ class NukiSmartLockChannel : public NukiChannel
     unsigned long _lastKeyTurnerStateRequest = 0;
     NukiLock::LockAction _lockAction = NukiLock::LockAction::Undefined;
     unsigned long _retryKeyTurnStateRequestMs = 0;
+    unsigned long _lastNotificationReceivedTimestamp = 0;
     unsigned long _lockActionTimerStart = 0;
     unsigned long _lockActionTimerWaitTime = 0;
     void startLockActionTimer(bool locking, unsigned long waitTimeMs);

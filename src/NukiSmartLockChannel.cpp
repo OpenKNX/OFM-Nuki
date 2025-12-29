@@ -237,7 +237,10 @@ void NukiSmartLockChannel::setLockTimer(NukiCountDownType type, unsigned long wa
 bool NukiSmartLockChannel::updateKeyTurnerState(bool lockNGoTimerStartAllowed)
 {
     _lastKeyTurnerStateRequest = max(1UL, millis());
-    _retryKeyTurnStateRequestMs = 600000*12; // 12 hours
+     if (_lastNotificationReceivedTimestamp != 0) // Nuki does not notify after a notification happens for some time
+        _retryKeyTurnStateRequestMs = 30000; // 30 seconds 
+    else
+        _retryKeyTurnStateRequestMs = 600000*12; // 12 hours
 
     Nuki::CmdResult result = _smartLock.requestKeyTurnerState(&_keyTurnerState);
     if (result == Nuki::CmdResult::Success)
@@ -725,6 +728,7 @@ bool NukiSmartLockChannel::pairDevice()
 
 void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
 {
+    _lastNotificationReceivedTimestamp = max(1UL, millis());
     if (_paired)
     {
         logInfoP("Notification received, updating keyturner state");
@@ -734,8 +738,6 @@ void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
 
 bool NukiSmartLockChannel::useCountDownKoAndStateText()
 {
-    if (_lockTimerStartTime == 0)
-        return false;
     switch (_countDownType)
     {
         case NukiCountDownType::NukiCountDownType_NotRunning:
@@ -906,6 +908,10 @@ void NukiSmartLockChannel::lockAction(NukiLock::LockAction action)
 
 void NukiSmartLockChannel::loop1()
 {
+    if (_lastNotificationReceivedTimestamp != 0 && millis() - _lastNotificationReceivedTimestamp > 120000) // Last notification older than 2 minutes, we expect to receive notifications again
+    {
+        _lastNotificationReceivedTimestamp = 0;
+    }
     if (!_initialized && _paired && (_retryInitialization == 0 || millis() - _retryInitialization > 600000))
     {
         if (!updateConfig())
