@@ -51,7 +51,8 @@ class NukiSmartLockChannel : public NukiChannel
     bool isNightTimeWindow();
     bool calculateIsNight();
     bool updateConfig();
-    bool updateKeyTurnerState(bool lockNGoTimerStartAllowed);
+    bool updateKeyTurnerState();
+    void updateInternalStateFromKeyTurnerState(bool lockNGoTimerStartAllowed);
     const char* lockStateToString(NukiLock::LockState state);
     bool _initialized = false;
     void updateTextState();

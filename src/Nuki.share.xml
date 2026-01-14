@@ -113,7 +113,6 @@
 								<TypeRestriction Base="Value" SizeInBit="2">
 									<Enumeration Text="nicht aktiv" Value="0" Id="%ENID%" />
 									<Enumeration Text="wenn Tür offen und Nuki versperrt" Value="1" Id="%ENID%" />
-									<Enumeration Text="wenn Tür offen und Nuki manuell geöffnet" Value="2" Id="%ENID%" />
 								</TypeRestriction>
 							</ParameterType>
 							
