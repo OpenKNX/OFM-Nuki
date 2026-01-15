@@ -29,6 +29,7 @@ class NukiSmartLockChannel : public NukiChannel
     NukiLock::NukiLock _smartLock;
     NukiLock::Config _config = {0};
     bool _paired = false;
+    bool _unlockedByOFM_Nuki = false;
     NukiLock::KeyTurnerState _keyTurnerState;
     unsigned long _lockTimerStartTime = 0;
     unsigned long _lockTimerDuration = 0;

@@ -918,14 +918,18 @@ void NukiSmartLockChannel::loop1()
     }
     if (_initialized)
     {
+       
         if (_lockAction != NukiLock::LockAction::Undefined || _lastKeyTurnerStateRequest == 0 || (millis() - _lastKeyTurnerStateRequest > _retryKeyTurnStateRequestMs))
         {
+            bool alreadyInitialized = _keyTurnerStateInitialized;
             logDebugP("Requesting keyturner state");
             if (updateKeyTurnerState())
             {
                 switch (_keyTurnerState.lockState)
                 {
                     case NukiLock::LockState::Locked:
+                        if (_lockAction == NukiLock::LockAction::Undefined)
+                            _unlockedByOFM_Nuki = false;
                         if (_lockAction == NukiLock::LockAction::Lock)
                         {
                             logInfoP("Lock action ingored, already locked");
@@ -933,6 +937,8 @@ void NukiSmartLockChannel::loop1()
                         }
                         break;
                     case NukiLock::LockState::Locking:
+                        if (_lockAction == NukiLock::LockAction::Undefined)
+                            _unlockedByOFM_Nuki = false;
                         if (_lockAction == NukiLock::LockAction::Lock)
                         {
                             logInfoP("Lock action ingored, locking already in progress");
@@ -944,6 +950,7 @@ void NukiSmartLockChannel::loop1()
                         {
                             logInfoP("Unlock action ingored, unlocking already in progress");
                             _lockAction = NukiLock::LockAction::Undefined;
+                            _unlockedByOFM_Nuki = true;
                         }
                         break;
                     case NukiLock::LockState::Unlocked:
@@ -951,6 +958,7 @@ void NukiSmartLockChannel::loop1()
                         {
                             logInfoP("Unlock action ingored, already unlocked");
                             _lockAction = NukiLock::LockAction::Undefined;
+                            _unlockedByOFM_Nuki = true;
                         }
                         break;
                     case NukiLock::LockState::Unlatched:
@@ -958,24 +966,28 @@ void NukiSmartLockChannel::loop1()
                         {
                             logInfoP("Unlatch action ingored, already unlatched");
                             _lockAction = NukiLock::LockAction::Undefined;
+                            _unlockedByOFM_Nuki = true;
                         }
                         break;
                     case NukiLock::LockState::UnlockedLnga:
-                        logWarningP("Lock'n'Go action ingored, Nuki Lock'n'Go active, this can not be interrupted");
+                        logWarningP("Nuki Lock'n'Go active, this can not be interrupted");
                         _lockAction = NukiLock::LockAction::Undefined;
+                        _unlockedByOFM_Nuki = false;
                         break;
                     case NukiLock::LockState::Unlatching:
                         if (_lockAction == NukiLock::LockAction::Unlatch || _lockAction == NukiLock::LockAction::Unlock)
                         {
                             logInfoP("Unlatch action ingored, unlatching already in progress");
                             _lockAction = NukiLock::LockAction::Undefined;
+                            _unlockedByOFM_Nuki = true;
                         }
                         break;
+                    
                 }
                 if (_lockAction == NukiLock::LockAction::Undefined)
                 {
                    // We only update the internal state if no lock action is pending, because this will update the state again
-                   updateInternalStateFromKeyTurnerState(_lastKeyTurnerStateRequest == 0 && _keyTurnerStateInitialized);
+                   updateInternalStateFromKeyTurnerState(alreadyInitialized && !_unlockedByOFM_Nuki);
                 }
             }
         }
@@ -988,6 +1000,13 @@ void NukiSmartLockChannel::loop1()
             {
                 if (_smartLock.lockAction(lockAction) == Nuki::CmdResult::Success)
                 {
+                    if (lockAction == NukiLock::LockAction::Unlock ||
+                        lockAction == NukiLock::LockAction::LockNgo ||
+                        lockAction == NukiLock::LockAction::LockNgoUnlatch ||
+                        lockAction == NukiLock::LockAction::Unlatch)
+                    {
+                        _unlockedByOFM_Nuki = true;
+                    }
                     logInfoP("Pending lock action %d sent", (int)lockAction);
                     _lockAction = NukiLock::LockAction::Undefined;
                     lockAction = NukiLock::LockAction::Undefined;
@@ -999,7 +1018,10 @@ void NukiSmartLockChannel::loop1()
                 }
             }
             if (lockAction != NukiLock::LockAction::Undefined)
+            {
                 logErrorP("Pending lock action %d failed after %d retries, giving up", (int)lockAction, maxRetries);
+                _lockAction = NukiLock::LockAction::Undefined;
+            }
             _retryKeyTurnStateRequestMs = 0;
         }
     }
