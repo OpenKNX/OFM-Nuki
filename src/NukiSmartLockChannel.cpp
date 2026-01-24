@@ -1160,7 +1160,7 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
                                 }
                                 else
                                 {
-                                    logInfoP("Continuing OpenKNX Lock'n'Go timer");
+                                    logInfoP("Continuing timer");
                                     if (_lockTimerWaitTimeMs > _lockTimerDuration)
                                         _lockTimerWaitTimeMs = _lockTimerWaitTimeMs - _lockTimerDuration;
                                     else
