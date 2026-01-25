@@ -383,3 +383,5 @@ Dieser Abschnitt kann hier aber erneut eingeblendet werden, um z.B. nach einem T
 1) Gerät über die ETS programmieren
 2) Knopf am Opener für 10 Sekunden drücken
 3) In der ETS mit 'Mit Opener koppeln' betätigen. Ist die Taste trotz Programmierung deaktiviert, einmal die Seite wechseln.
+
+ACHTUNG: Das Geräte muss für das Pairing sehr nahe (&lt; 1m) an das SmartLock gebracht werden.
