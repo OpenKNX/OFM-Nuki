@@ -3,7 +3,7 @@
 // <!-- KO Batteriestatus -->
 // <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Byte" DatapointType="DPST-5-1" Text="%C%: Batterieladung" FunctionText="{{0:-}} Batterieladung" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
 // <!-- KO Auf/Zu -->
-// <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="%C%: Zusperren/Aufsperren" FunctionText="{{0:-}} Zusperren/Aufsperren" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+// <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-1" Text="%C%: Zusperren/Aufsperren" FunctionText="{{0:-}} Zusperren/Aufsperren" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
 // <!-- KO Auf/Zu Status -->
 // <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00200" RefId="%AID%_O-%TT%%CC%002" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="%C%: Entsperrt Status" FunctionText="{{0:-}} Entsperrt Status" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
 // <!-- KO Unlatch -->
@@ -40,7 +40,7 @@
 // <ComObjectRef Id="%AID%_O-%TT%%CC%017_R-%TT%%CC%01700" RefId="%AID%_O-%TT%%CC%017" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="{{0:Nuki %C%}}: Zusperren durch Aktor aktiv" FunctionText="Nuki %C%: Ausgang, Inaktiv=0 / Aktiv=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" UpdateFlag="Enabled" />
 
 #define KoNUK_BatteryState KoNUK_CHKO0
-#define KoNUK_LockUnlock KoNUK_CHKO1
+#define KoNUK_Unlock KoNUK_CHKO1
 #define KoNUK_UnLockState KoNUK_CHKO2
 #define KoNUK_Unlatch KoNUK_CHKO3
 #define KoNUK_UnlatchState KoNUK_CHKO4
@@ -59,7 +59,7 @@
 #define KoNUK_Locking KoNUK_CHK17
 
 #define NUK_KoBatteryState NUK_KoCHKO0
-#define NUK_KoLockUnlock NUK_KoCHKO1
+#define NUK_KoUnlock NUK_KoCHKO1
 #define NUK_KoUnLockState NUK_KoCHKO2
 #define NUK_KoUnlatch NUK_KoCHKO3
 #define NUK_KoUnlatchState NUK_KoCHKO4
@@ -225,7 +225,7 @@ const char* NukiSmartLockChannel::lockStateToString(NukiLock::LockState state)
     }
 }
 
-void NukiSmartLockChannel::setLockTimer(NukiCountDownType type, unsigned long waitTime)
+void NukiSmartLockChannel::setLockTimer(NukiCountDownType type, unsigned long waitTime, const char* reason)
 {
     _countDownType = type;
     if (_countDownType == NukiCountDownType::NukiCountDownType_NotRunning)
@@ -233,7 +233,7 @@ void NukiSmartLockChannel::setLockTimer(NukiCountDownType type, unsigned long wa
     else
         _lockTimerStartTime = max(1UL, millis());
     _lockTimerWaitTimeMs = waitTime;
-    logDebugP("Set close timer: type=%d, waitTime=%lu, startTime=%lu", (int)_countDownType, _lockTimerWaitTimeMs, _lockTimerStartTime);
+    logDebugP("%s: Set close timer: type=%d, waitTime=%lu, startTime=%lu", reason, (int)_countDownType, _lockTimerWaitTimeMs, _lockTimerStartTime);
 }
 
 bool NukiSmartLockChannel::updateKeyTurnerState()
@@ -324,16 +324,15 @@ void NukiSmartLockChannel::updateInternalStateFromKeyTurnerState(bool lockNGoTim
     if (nukiLockNgoActive)
     {
         logDebugP("Lock'n'Go active for %d seconds", (int)_keyTurnerState.lockNgoTimer);
-        setLockTimer(NukiCountDownType::NukiCountDownType_NukiLockNGo, _keyTurnerState.lockNgoTimer * 1000);
+        setLockTimer(NukiCountDownType::NukiCountDownType_NukiLockNGo, _keyTurnerState.lockNgoTimer * 1000, "Nuki Lock'n'Go active from lock");
     }
     else if (_countDownType == NukiCountDownType::NukiCountDownType_NukiLockNGo)
     {
-        logDebugP("Nuki Lock'n'Go no longer active");
-        setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+        setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0, "Nuki Lock'n'Go no longer active");
     }
     if (_keyTurnerState.lockState == NukiLock::LockState::Locked)
     {
-        setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+        setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0, "Lock state is locked");
         if (ParamNUK_CHOpenKNXLockNgo)
             KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t)0, DPT_Switch);
     }
@@ -352,7 +351,7 @@ void NukiSmartLockChannel::updateInternalStateFromKeyTurnerState(bool lockNGoTim
         ParamNUK_CHOpenKNXLockNgo)
     {
         logInfoP("Starting OpenKNX Lock'n'Go timer");
-        startOpenKNXLockNGoCloseTimer();
+        startOpenKNXLockNGoCloseTimer("Update key turner state");
     }
 }
 
@@ -365,9 +364,9 @@ void NukiSmartLockChannel::checkAndStartAutoLock()
         _keyTurnerState.lockState != NukiLock::LockState::Locking)
     {
         if (ParamNUK_CHLockModeNightEnable && _isNight)
-            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, ParamNUK_CHAutoLockNightDelayTimeMS);
+            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, ParamNUK_CHAutoLockNightDelayTimeMS, "checkAndStartAutoLock night");
         else
-            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, ParamNUK_CHAutoLockDelayTimeMS);
+            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, ParamNUK_CHAutoLockDelayTimeMS, "checkAndStartAutoLock day");
     }
 }
 
@@ -425,16 +424,16 @@ void NukiSmartLockChannel::processInputKo(GroupObject& ko)
     NukiChannel::processInputKo(ko);
     switch (NUK_KoCalcIndex(ko.asap()))
     {
-        case NUK_KoLockUnlock:
+        case NUK_KoUnlock:
             if (ko.value(DPT_Switch))
-            {
-                logInfoP("Lock command received via KNX");
-                lockAction(NukiLock::LockAction::Lock);
-            }
-            else
             {
                 logInfoP("Unlock command received via KNX");
                 lockAction(NukiLock::LockAction::Unlock);
+            }
+            else
+            {
+                logInfoP("Lock command received via KNX");
+                lockAction(NukiLock::LockAction::Lock);
             }
             break;
         case NUK_KoUnlatch:
@@ -476,16 +475,17 @@ void NukiSmartLockChannel::processInputKo(GroupObject& ko)
                     {
                         case 1:
                             logInfoP("Restart OpenKNX Lock'n'Go time");
-                            setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, ParamNUK_CHLockNGoDelayTimeMS);
+                            setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, ParamNUK_CHLockNGoDelayTimeMS, "KO OpenKNX Lock'n'Go restart");
                             _lockTimerDuration = 0;
                             break;
                         case 2:
                             logInfoP("OpenKNX Lock'n'Go stop");
-                            setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, 0); // set wait time to 0 to trigger lock
+                            setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, 0, "KO OpenKNX Lock'n'Go stop"); // set wait time to 0 to trigger lock
                             break;
                         case 3:
                             logInfoP("OpenKNX Lock'n'Go set to indefinite unlock");
-                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0, "KO OpenKNX Lock'n'Go indefinite unlock");
+                            _unlockedByOFM_Nuki = true;
                             KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t)0, DPT_Switch);
                             checkAndStartAutoLock();
                             break;
@@ -493,7 +493,7 @@ void NukiSmartLockChannel::processInputKo(GroupObject& ko)
                     return;
                 }
 
-                startOpenKNXLockNGoCloseTimer();
+                startOpenKNXLockNGoCloseTimer("Ko OpenKNX Lock'n'Go command");
                 // <Enumeration Text="Entsperren" Value="0" Id="%ENID%" />
                 // <Enumeration Text="Lasche ziehen" Value="1" Id="%ENID%" />
                 if (ParamNUK_CHLockNGoMode)
@@ -521,21 +521,23 @@ void NukiSmartLockChannel::processInputKo(GroupObject& ko)
                         if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
                         {
                             logInfoP("OpenKNX Lock'n'Go OFF received via KNX, set to indefinite unlock");
-                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0, "KO OpenKNX Lock'n'Go OFF indefinite unlock");
+                            _unlockedByOFM_Nuki = true;
                             KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t)0, DPT_Switch);
                             checkAndStartAutoLock();
                         }
                         else
                         {
                             logInfoP("OpenKNX Lock'n'Go OFF received via KNX, but not active, lock");
-                            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, 0);
+                            setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, 0, "KO OpenKNX Lock'n'Go OFF lock");
                         }
                         break;
                     case 3:
                         if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
                         {
                             logInfoP("OpenKNX Lock'n'Go OFF received via KNX, set to indefinite unlock");
-                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+                            _unlockedByOFM_Nuki = true;
+                            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0, "KO OpenKNX Lock'n'Go OFF indefinite unlock");
                             KoNUK_OpenKNXLocknGoState.valueCompare((uint8_t)0, DPT_Switch);
                             checkAndStartAutoLock();
                         }
@@ -556,9 +558,9 @@ void NukiSmartLockChannel::processInputKo(GroupObject& ko)
     }
 }
 
-void NukiSmartLockChannel::startOpenKNXLockNGoCloseTimer()
+void NukiSmartLockChannel::startOpenKNXLockNGoCloseTimer(const char* reason)
 {
-    setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, ParamNUK_CHLockNGoDelayTimeMS);
+    setLockTimer(NukiCountDownType::NukiCountDownType_OpenKNXLockNGo, ParamNUK_CHLockNGoDelayTimeMS, reason);
     _doorOpenBreak = _doorOpen;
     KoNUK_OpenKNXLocknGoState.value((uint8_t)1, DPT_Switch);
     updateStates(_lockTimerStartTime);
@@ -1146,14 +1148,15 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
                                 break;
                             case 2: // lock after wait time time
                                 if (_countDownType == NukiCountDownType::NukiCountDownType_NotRunning)
-                                    setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, ParamNUK_CHWaitTimeDelayTimeMS);
+                                    setLockTimer(NukiCountDownType::NukiCountDownType_AutoLock, ParamNUK_CHWaitTimeDelayTimeMS, "Door close, Wait time");
                                 else
-                                    setLockTimer(_countDownType, ParamNUK_CHWaitTimeDelayTimeMS);
+                                    setLockTimer(_countDownType, ParamNUK_CHWaitTimeDelayTimeMS, "Door close, continue");
                                 logInfoP("Locking after %d", (int)(_lockTimerWaitTimeMs / 1000));
                                 break;
                             case 3: // lock after wait time time, if OpenKNX Lock'n'Go active
                                 if (_countDownType == NukiCountDownType::NukiCountDownType_OpenKNXLockNGo)
                                 {
+                                    logDebugP("Lock after door close because OpenKNX Lock'n'Go active");
                                     _lockTimerWaitTimeMs = ParamNUK_CHWaitTimeDelayTimeMS;
                                     logInfoP("Locking after %d", (int)(_lockTimerWaitTimeMs / 1000));
                                     _lockTimerStartTime = now;
@@ -1179,7 +1182,7 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
         else
         {
             // Nuki Lock'n'go ends
-            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0);
+            setLockTimer(NukiCountDownType::NukiCountDownType_NotRunning, 0, "Nuki Lock'n'Go ended");
             checkAndStartAutoLock();
             startLockActionTimer(true, KeyTurnTimeMs);
         }

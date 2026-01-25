@@ -233,7 +233,7 @@
               <!-- KO Batteriestatus -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00000" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Byte" DatapointType="DPST-5-1" Text="{{0:Nuki %C%}}: Batterieladung" FunctionText="Nuki %C%: Ausgang, Prozent" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Auf/Zu -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-9"  Text="{{0:Nuki %C%}}: Entriegeln / Verriegeln" FunctionText="Nuki %C%: Eingang, Entriegeln=0 / Verriegeln=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00100" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-1"  Text="{{0:Nuki %C%}}: Verriegeln / Entriegeln" FunctionText="Nuki %C%: Eingang, Verriegeln=0 / Entriegeln=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO Auf/Zu Status -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00200" RefId="%AID%_O-%TT%%CC%002" ObjectSize="1 Bit" DatapointType="DPST-1-19" Text="{{0:Nuki %C%}}: Entriegelt Status" FunctionText="Nuki %C%: Ausgang, Verriegelt=0 / Entriegelt=1 " TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Unlatch -->
@@ -245,7 +245,7 @@
               <!-- KO Motor Blocked-->
               <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00600" RefId="%AID%_O-%TT%%CC%006" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="{{0:Nuki %C%}}: Motor blockiert" FunctionText="Nuki %C%: Ausgang, Status, Nicht blockiert=0 / Motor blockiert=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO OpenKNX Lock`n`Go -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00700" RefId="%AID%_O-%TT%%CC%007" ObjectSize="1 Bit" DatapointType="DPST-1-9" Text="{{0:Nuki %C%}}: OpenKNX Lock'n'Go" FunctionText="Nuki %C%: Eingang, Auslöser, Konfigurierte Aktion=0 / OpenKNX Lock'n'Go=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00700" RefId="%AID%_O-%TT%%CC%007" ObjectSize="1 Bit" DatapointType="DPST-1-1" Text="{{0:Nuki %C%}}: OpenKNX Lock'n'Go" FunctionText="Nuki %C%: Eingang, Auslöser, Konfigurierte Aktion=0 / OpenKNX Lock'n'Go=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
               <!-- KO OpenKNX Lock`n`Go Aktiv -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%008_R-%TT%%CC%00800" RefId="%AID%_O-%TT%%CC%008" ObjectSize="1 Bit" DatapointType="DPST-1-11" Text="{{0:Nuki %C%}}: OpenKNX Lock'n'Go Aktiv" FunctionText="Nuki %C%: Ausgang, Status, Inaktiv=0 / Aktiv=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- KO Verbleibend Sekunden-->
