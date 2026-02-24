@@ -47,7 +47,10 @@ void NukiModule::setup()
     NUKChannelOwnerModule::initialize(ParamNUK_VisibleChannels);
     logDebugP("Start Bluetooth Scanner");
     scanner = new BleScanner::Scanner();
-    scanner->initialize();
+    // interval=160 (100ms), window=48 (30ms) → 30% duty cycle.
+    // Default was interval=window=23 → 100% duty cycle (radio permanently on).
+    // 30% is sufficient to catch Nuki advertisements (~200ms interval).
+    scanner->initialize("blescanner", true, 160, 48);
 
     NUKChannelOwnerModule::setup();
 

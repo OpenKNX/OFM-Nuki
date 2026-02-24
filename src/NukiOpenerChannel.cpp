@@ -33,6 +33,17 @@ void NukiOpenerChannel::initialize(BleScanner::Scanner& scanner)
     _opener.registerBleScanner(&scanner);
     _opener.initialize();
     _paired = _opener.isPairedWithLock();
+    // Whitelist paired device so BLE controller hardware filters out
+    // all other BLE advertisements — biggest power saver with antenna connected.
+    if (_paired)
+    {
+        auto addr = _opener.getBleAddress();
+        if (addr != BLEAddress("", 0))
+        {
+            logInfoP("Whitelisting paired Opener: %s", addr.toString().c_str());
+            scanner.whitelist(addr);
+        }
+    }
 }
 
 void NukiOpenerChannel::loop()
@@ -60,17 +71,31 @@ void NukiOpenerChannel::loop()
 
 bool NukiOpenerChannel::pairDevice()
 {
+    // Temporarily disable whitelist filter so we can discover new devices
+    NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_NO_WL);
+
     _opener.unPairNuki();
     if (_opener.pairNuki() == Nuki::PairingResult::Success)
     {
         _paired = true;
         logInfoP("Nuki Opener paired");
+        // Whitelist newly paired device for BLE hardware filtering
+        auto addr = _opener.getBleAddress();
+        if (addr != BLEAddress("", 0))
+        {
+            logInfoP("Whitelisting paired Opener: %s", addr.toString().c_str());
+            // Note: scanner reference not stored in Opener — use NimBLE directly
+            NimBLEDevice::whiteListAdd(addr);
+            NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_USE_WL);
+        }
         return true;
     }
     else
     {
         _paired = _opener.isPairedWithLock();
         logErrorP("Nuki Opener pairing failed");
+        // Re-enable whitelist filter after failed pairing
+        NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_USE_WL);
         return false;
     }
 }

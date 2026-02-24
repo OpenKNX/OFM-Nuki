@@ -379,6 +379,17 @@ void NukiSmartLockChannel::initialize(BleScanner::Scanner& scanner)
     _smartLock.registerBleScanner(&scanner);
     _smartLock.initialize();
     _paired = _smartLock.isPairedWithLock();
+    // Whitelist paired device so BLE controller hardware filters out
+    // all other BLE advertisements — biggest power saver with antenna connected.
+    if (_paired)
+    {
+        auto addr = _smartLock.getBleAddress();
+        if (addr != BLEAddress("", 0))
+        {
+            logInfoP("Whitelisting paired Smart Lock: %s", addr.toString().c_str());
+            scanner.whitelist(addr);
+        }
+    }
 }
 
 void NukiSmartLockChannel::setup()
@@ -700,6 +711,9 @@ bool NukiSmartLockChannel::pairDevice()
     logInfoP("Pairing Nuki Smart Lock...");
     _paired = false;
 
+    // Temporarily disable whitelist filter so we can discover new devices
+    NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_NO_WL);
+
     int counter = 60;
     while (!_smartLock.isPairedWithLock())
     {
@@ -712,6 +726,8 @@ bool NukiSmartLockChannel::pairDevice()
         if (counter == 0)
         {
             logErrorP("Nuki Smart Lock pairing failed");
+            // Re-enable whitelist filter after failed pairing
+            NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_USE_WL);
             return false;
         }
         if (_bleScanner != nullptr)
@@ -720,6 +736,16 @@ bool NukiSmartLockChannel::pairDevice()
     }
     logInfoP("Nuki Smart Lock paired");
     _paired = true;
+    // Whitelist newly paired device for BLE hardware filtering
+    if (_bleScanner != nullptr)
+    {
+        auto addr = _smartLock.getBleAddress();
+        if (addr != BLEAddress("", 0))
+        {
+            logInfoP("Whitelisting paired Smart Lock: %s", addr.toString().c_str());
+            _bleScanner->whitelist(addr);
+        }
+    }
     return true;
 }
 
