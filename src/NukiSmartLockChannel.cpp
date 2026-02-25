@@ -706,6 +706,9 @@ bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo
 
 bool NukiSmartLockChannel::pairDevice()
 {
+    // Save old address before unpairing so we can remove it from the whitelist later
+    auto oldAddr = _smartLock.getBleAddress();
+
     logInfoP("Unpair Nuki Smart Lock");
     _smartLock.unPairNuki();
     logInfoP("Pairing Nuki Smart Lock...");
@@ -719,7 +722,6 @@ bool NukiSmartLockChannel::pairDevice()
     {
         if (_smartLock.pairNuki(Nuki::AuthorizationIdType::App) == Nuki::PairingResult::Success)
         {
-
             break;
         }
         counter--;
@@ -736,6 +738,12 @@ bool NukiSmartLockChannel::pairDevice()
     }
     logInfoP("Nuki Smart Lock paired");
     _paired = true;
+    // Remove old device from whitelist (different address = device replaced)
+    if (oldAddr != BLEAddress("", 0) && oldAddr != _smartLock.getBleAddress())
+    {
+        logInfoP("Removing old Smart Lock from whitelist: %s", oldAddr.toString().c_str());
+        NimBLEDevice::whiteListRemove(oldAddr);
+    }
     // Whitelist newly paired device for BLE hardware filtering
     if (_bleScanner != nullptr)
     {

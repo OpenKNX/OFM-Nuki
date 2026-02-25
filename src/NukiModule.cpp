@@ -54,7 +54,12 @@ void NukiModule::setup()
 
     NUKChannelOwnerModule::setup();
 
-   for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
+    // Clear BLE whitelist before initializing channels.
+    // The NimBLE whitelist lives only in BLE controller RAM — it does not survive a reboot.
+    // Each channel's initialize() will re-add its paired device address.
+    NimBLEDevice::whiteListClear();
+
+    for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
     {
         auto channel = (NukiChannel*) getChannel(i);
         if (channel == nullptr)
@@ -63,6 +68,19 @@ void NukiModule::setup()
         }
         logDebugP("Initialize channel %d", i);
         channel->initialize(*scanner);
+    }
+
+    // Activate HW whitelist filter after all channels have registered their addresses.
+    // Only enable if at least one address is in the list — an empty whitelist with USE_WL
+    // would block all advertisements.
+    if (NimBLEDevice::getWhiteListCount() > 0)
+    {
+        logDebugP("Enabling BLE whitelist filter (%d address(es))", NimBLEDevice::getWhiteListCount());
+        NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_USE_WL);
+    }
+    else
+    {
+        logDebugP("No paired devices — BLE whitelist filter not activated");
     }
 }
 
