@@ -54,11 +54,8 @@ void NukiModule::setup()
 
     NUKChannelOwnerModule::setup();
 
-    // Clear BLE whitelist before initializing channels.
-    // The NimBLE whitelist lives only in BLE controller RAM — it does not survive a reboot.
-    // Each channel's initialize() will re-add its paired device address.
-    NimBLEDevice::whiteListClear();
-
+    // The NimBLE whitelist lives only in BLE controller RAM and is always empty after a
+    // reboot — no explicit clear needed. Each channel's initialize() adds its paired address.
     for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
     {
         auto channel = (NukiChannel*) getChannel(i);
