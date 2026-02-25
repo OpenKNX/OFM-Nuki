@@ -14,6 +14,7 @@ class NukiModule : public NUKChannelOwnerModule
 {
   private:
     BleScanner::Scanner* scanner = nullptr;
+    unsigned long _startFastBLEScanningTimer = 0;
     
   public:
     const std::string name() override;

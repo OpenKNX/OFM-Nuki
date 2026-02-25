@@ -45,12 +45,6 @@ const std::string NukiModule::version()
 void NukiModule::setup()
 {
     NUKChannelOwnerModule::initialize(ParamNUK_VisibleChannels);
-    logDebugP("Start Bluetooth Scanner");
-    scanner = new BleScanner::Scanner();
-    // interval=160 (100ms), window=48 (30ms) → 30% duty cycle.
-    // Default was interval=window=23 → 100% duty cycle (radio permanently on).
-    // 30% is sufficient to catch Nuki advertisements (~200ms interval).
-    scanner->initialize("blescanner", true, 160, 48);
 
     NUKChannelOwnerModule::setup();
 
@@ -63,8 +57,20 @@ void NukiModule::setup()
         {
             continue;
         }
+        if (scanner == nullptr)
+        {
+            logDebugP("Start Bluetooth Scanner");
+            scanner = new BleScanner::Scanner();
+            // interval=160 (100ms), window=48 (30ms) → 30% duty cycle.
+            // Default was interval=window=23 → 100% duty cycle (radio permanently on).
+            // 30% is sufficient to catch Nuki advertisements (~200ms interval).
+            scanner->initialize("blescanner", true, 160, 48);
+            _startFastBLEScanningTimer = millis();
+        }
         logDebugP("Initialize channel %d", i);
         channel->initialize(*scanner);
+
+
     }
 
     // Activate HW whitelist filter after all channels have registered their addresses.
@@ -83,6 +89,15 @@ void NukiModule::setup()
 
 void NukiModule::loop()
 {
+    if (_startFastBLEScanningTimer != 0 && millis() - _startFastBLEScanningTimer >= 10000)
+    {
+        _startFastBLEScanningTimer = 0;
+    
+        logDebugP("Switch bluetooth scanning to full speed");
+        auto bleScan = NimBLEDevice::getScan();
+        bleScan->setInterval(23);
+        bleScan->setWindow(23);
+    }
     if (scanner != nullptr)
         scanner->update();
    
