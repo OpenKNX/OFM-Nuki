@@ -149,8 +149,8 @@ bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId
         {
             if (length != 2)
                 return false;
-            auto channelIndex = data[1];
-            if (channelIndex < 0 || channelIndex >= getNumberOfChannels())
+            int channelIndex = data[1];
+            if (channelIndex >= getNumberOfChannels())
             {
                 logErrorP("Channel %d not available", channelIndex + 1);
                 resultData[0] = 4;
@@ -165,19 +165,7 @@ bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId
                 resultLength = 1;
                 return true;
             }
-            if (channel->pairDevice())
-            {
-                resultData[0] = 2;
-                resultLength = 1;
-                return true;
-            }
-            else
-            {
-                resultData[0] = 3;
-                resultLength = 1;
-                return true;
-            }
-            resultData[0] = 2;
+            resultData[0] = channel->pairDevice() ? 2 : 3;
             resultLength = 1;
             return true;
         }
@@ -210,6 +198,7 @@ OpenKNX::Channel* NukiModule::createChannel(uint8_t _channelIndex /* this parame
     case 2:
         logInfoP("Channel %d Opener creating", _channelIndex);
         channel = new NukiOpenerChannel(_channelIndex);
+        break;
     default:
         logErrorP("Channel %d not implemented", _channelIndex);
         break;

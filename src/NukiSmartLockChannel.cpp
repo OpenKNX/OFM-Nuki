@@ -280,7 +280,7 @@ void NukiSmartLockChannel::updateInternalStateFromKeyTurnerState(bool lockNGoTim
     switch (_keyTurnerState.lockState)
     {
         case NukiLock::LockState::Unlocking:
-            _retryKeyTurnStateRequestMs = 5000; // 5 seconds
+            _retryKeyTurnStateRequestMs = NUKI_STATE_INTERMEDIATE_POLL_MS;
             KoNUK_UnLockState.valueCompare((uint8_t)1, DPT_Switch);
             KoNUK_UnlatchState.valueCompare((uint8_t)0, DPT_Switch);
             unlockingOrUnlocked = true;
@@ -293,7 +293,7 @@ void NukiSmartLockChannel::updateInternalStateFromKeyTurnerState(bool lockNGoTim
             stopLockActionTimer();
             break;
         case NukiLock::LockState::Unlatching:
-            _retryKeyTurnStateRequestMs = 5000; // 5 seconds
+            _retryKeyTurnStateRequestMs = NUKI_STATE_INTERMEDIATE_POLL_MS;
             KoNUK_UnLockState.valueCompare((uint8_t)1, DPT_Switch);
             KoNUK_UnlatchState.valueCompare((uint8_t)1, DPT_Switch);
             break;
@@ -304,7 +304,7 @@ void NukiSmartLockChannel::updateInternalStateFromKeyTurnerState(bool lockNGoTim
             stopLockActionTimer();
             break;
         case NukiLock::LockState::Locking:
-            _retryKeyTurnStateRequestMs = 5000; // 5 seconds
+            _retryKeyTurnStateRequestMs = NUKI_STATE_INTERMEDIATE_POLL_MS;
             KoNUK_UnLockState.valueCompare((uint8_t)1, DPT_Switch);
             KoNUK_UnlatchState.valueCompare((uint8_t)0, DPT_Switch);
             break;
@@ -717,6 +717,8 @@ bool NukiSmartLockChannel::pairDevice()
     // Temporarily disable whitelist filter so we can discover new devices
     NimBLEDevice::getScan()->setFilterPolicy(BLE_HCI_SCAN_FILT_NO_WL);
 
+    if (_bleScanner == nullptr)
+        logWarningP("BLE scanner not yet initialized — pairing proceeds without scan updates (BLE init delay may still be pending)");
     int counter = 60;
     while (!_smartLock.isPairedWithLock())
     {
@@ -975,7 +977,7 @@ void NukiSmartLockChannel::loop1()
                             _unlockedByOFM_Nuki = false;
                         if (_lockAction == NukiLock::LockAction::Lock)
                         {
-                            logInfoP("Lock action ingored, already locked");
+                            logInfoP("Lock action ignored, already locked");
                             _lockAction = NukiLock::LockAction::Undefined;
                         }
                         break;
@@ -984,14 +986,14 @@ void NukiSmartLockChannel::loop1()
                             _unlockedByOFM_Nuki = false;
                         if (_lockAction == NukiLock::LockAction::Lock)
                         {
-                            logInfoP("Lock action ingored, locking already in progress");
+                            logInfoP("Lock action ignored, locking already in progress");
                             _lockAction = NukiLock::LockAction::Undefined;
                         }
                         break;
                     case NukiLock::LockState::Unlocking:
                         if (_lockAction == NukiLock::LockAction::Unlock)
                         {
-                            logInfoP("Unlock action ingored, unlocking already in progress");
+                            logInfoP("Unlock action ignored, unlocking already in progress");
                             _lockAction = NukiLock::LockAction::Undefined;
                             _unlockedByOFM_Nuki = true;
                         }
@@ -999,7 +1001,7 @@ void NukiSmartLockChannel::loop1()
                     case NukiLock::LockState::Unlocked:
                         if (_lockAction == NukiLock::LockAction::Unlock)
                         {
-                            logInfoP("Unlock action ingored, already unlocked");
+                            logInfoP("Unlock action ignored, already unlocked");
                             _lockAction = NukiLock::LockAction::Undefined;
                             _unlockedByOFM_Nuki = true;
                         }
@@ -1007,7 +1009,7 @@ void NukiSmartLockChannel::loop1()
                     case NukiLock::LockState::Unlatched:
                         if (_lockAction == NukiLock::LockAction::Unlatch || _lockAction == NukiLock::LockAction::Unlock)
                         {
-                            logInfoP("Unlatch action ingored, already unlatched");
+                            logInfoP("Unlatch action ignored, already unlatched");
                             _lockAction = NukiLock::LockAction::Undefined;
                             _unlockedByOFM_Nuki = true;
                         }
@@ -1020,7 +1022,7 @@ void NukiSmartLockChannel::loop1()
                     case NukiLock::LockState::Unlatching:
                         if (_lockAction == NukiLock::LockAction::Unlatch || _lockAction == NukiLock::LockAction::Unlock)
                         {
-                            logInfoP("Unlatch action ingored, unlatching already in progress");
+                            logInfoP("Unlatch action ignored, unlatching already in progress");
                             _lockAction = NukiLock::LockAction::Undefined;
                             _unlockedByOFM_Nuki = true;
                         }
@@ -1256,7 +1258,7 @@ void NukiSmartLockChannel::updateStates(unsigned long now)
                     case 2: {
                         uint8_t remainingMinutes = (remainingSeconds + 59) / 60;
                         if (KoNUK_RemainingOpenTime.valueCompare((uint8_t)remainingMinutes, DPT_Value_1_Ucount))
-                            logInfoP("Renumaining Open Time (minutes): %d", remainingMinutes);
+                            logInfoP("Remaining Open Time (minutes): %d", remainingMinutes);
                     }
                     break;
                 }

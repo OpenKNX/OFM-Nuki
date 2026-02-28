@@ -67,6 +67,7 @@ void NukiOpenerChannel::loop()
             if (_opener.requestBatteryReport(&report) == Nuki::CmdResult::Success)
             {
                 logDebugP("Battery status request sent");
+                _openerStateInitialized = true; // first successful BLE contact: initial state known
                 KoNUK_BatteryEmpty.valueCompare((uint8_t) report.criticalBatteryState, DPT_Alarm);
             }
             else

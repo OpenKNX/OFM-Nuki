@@ -35,10 +35,17 @@
   #define NUKI_REINIT_INTERVAL_MS 600000UL // 10 minutes
 #endif
 
+// SmartLock: re-poll interval while Nuki is in a transitional state (Unlocking/Locking/Unlatching).
+// Short enough to catch the final state quickly without hammering the lock.
+// Override: -D NUKI_STATE_INTERMEDIATE_POLL_MS=5000
+#ifndef NUKI_STATE_INTERMEDIATE_POLL_MS
+  #define NUKI_STATE_INTERMEDIATE_POLL_MS 5000UL // 5 seconds
+#endif
+
 // Opener: how often to request a battery report.
 // Override: -D NUKI_OPENER_BATTERY_CHECK_INTERVAL_MS=86400000
 #ifndef NUKI_OPENER_BATTERY_CHECK_INTERVAL_MS
-  #define NUKI_OPENER_BATTERY_CHECK_INTERVAL_MS (6000000UL * 24) // 24 hours
+  #define NUKI_OPENER_BATTERY_CHECK_INTERVAL_MS (3600000UL * 24) // 24 hours
 #endif
 // -------------------------------------------------------------------------
 
@@ -67,4 +74,4 @@ public:
     // Unpaired channels return true immediately (nothing to wait for).
     // Used by NukiModule to switch BLE scan from 100% to 30% duty cycle.
     virtual bool isInitialStateFetched() const { return true; }
-}; 
+};
