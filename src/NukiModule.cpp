@@ -45,32 +45,36 @@ const std::string NukiModule::version()
 void NukiModule::setup()
 {
     NUKChannelOwnerModule::initialize(ParamNUK_VisibleChannels);
-
     NUKChannelOwnerModule::setup();
 
+    // Defer BLE scanner initialization to loop() to let the supply voltage settle after
+    // boot before the BLE stack draws its startup current peak.
+    // Triggered channels exist but are not yet connected to the scanner.
+    _bleInitDeadline = millis() + BLE_INIT_DELAY_MS;
+    logDebugP("BLE scanner start deferred by %dms for supply stabilization", BLE_INIT_DELAY_MS);
+}
+
+void NukiModule::initializeBleScanner()
+{
     // The NimBLE whitelist lives only in BLE controller RAM and is always empty after a
     // reboot — no explicit clear needed. Each channel's initialize() adds its paired address.
     for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
     {
         auto channel = (NukiChannel*) getChannel(i);
         if (channel == nullptr)
-        {
             continue;
-        }
         if (scanner == nullptr)
         {
             logDebugP("Start Bluetooth Scanner");
             scanner = new BleScanner::Scanner();
-            // interval=160 (100ms), window=48 (30ms) → 30% duty cycle.
-            // Default was interval=window=23 → 100% duty cycle (radio permanently on).
-            // 30% is sufficient to catch Nuki advertisements (~200ms interval).
-            scanner->initialize("blescanner", true, 160, 48);
-            _startFastBLEScanningTimer = millis();
+            // Boot: 100% duty cycle (interval=window=23) for fast initial connection.
+            // Switches to 30% in loop() once all paired channels have fetched their
+            // state, or after 60s fallback (Nuki out of range / battery dead).
+            scanner->initialize("blescanner", true, BLE_SCAN_INTERVAL_BOOT, BLE_SCAN_WINDOW_BOOT);
+            _initialStateFetchDeadline = millis() + BLE_INITIAL_STATE_TIMEOUT_MS;
         }
         logDebugP("Initialize channel %d", i);
         channel->initialize(*scanner);
-
-
     }
 
     // Activate HW whitelist filter after all channels have registered their addresses.
@@ -89,14 +93,39 @@ void NukiModule::setup()
 
 void NukiModule::loop()
 {
-    if (_startFastBLEScanningTimer != 0 && millis() - _startFastBLEScanningTimer >= 10000)
+    // Deferred BLE startup: wait for supply to stabilize before starting the BLE stack.
+    if (_bleInitDeadline != 0 && millis() >= _bleInitDeadline)
     {
-        _startFastBLEScanningTimer = 0;
-    
-        logDebugP("Switch bluetooth scanning to full speed");
-        auto bleScan = NimBLEDevice::getScan();
-        bleScan->setInterval(23);
-        bleScan->setWindow(23);
+        _bleInitDeadline = 0;
+        logDebugP("Boot stabilization done — initializing BLE scanner");
+        initializeBleScanner();
+    }
+
+    // Switch from 100% to 30% BLE duty cycle once all paired channels have their initial
+    // state, or after 60s fallback so we don't scan at full power indefinitely.
+    if (_initialStateFetchDeadline != 0)
+    {
+        bool allFetched = true;
+        for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
+        {
+            auto ch = (NukiChannel*) getChannel(i);
+            if (ch != nullptr && !ch->isInitialStateFetched())
+            {
+                allFetched = false;
+                break;
+            }
+        }
+        if (allFetched || millis() >= _initialStateFetchDeadline)
+        {
+            _initialStateFetchDeadline = 0;
+            if (allFetched)
+                logDebugP("All channels ready — switching BLE scan to low-power mode (30%% duty)");
+            else
+                logDebugP("Initial state timeout — switching BLE scan to low-power mode (30%% duty)");
+            auto bleScan = NimBLEDevice::getScan();
+            bleScan->setInterval(BLE_SCAN_INTERVAL_LP); // default 100ms
+            bleScan->setWindow(BLE_SCAN_WINDOW_LP);     // default 30ms → 30% duty cycle
+        }
     }
     if (scanner != nullptr)
         scanner->update();

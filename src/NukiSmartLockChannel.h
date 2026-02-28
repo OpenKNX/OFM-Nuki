@@ -78,4 +78,5 @@ public:
     virtual bool processCommand(const std::string cmd, bool diagnoseKo) override;
     virtual void showInformations() override;
     virtual void handleEvent(Nuki::EventType eventType) override;
+    virtual bool isInitialStateFetched() const override;
 };

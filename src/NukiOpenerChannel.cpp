@@ -22,7 +22,15 @@ void NukiOpenerChannel::setup()
 
 void NukiOpenerChannel::handleEvent(Nuki::EventType eventType)
 {
-   _lastBatteryRequest = 0;
+    _lastBatteryRequest = 0;
+    _openerStateInitialized = true; // first event means Nuki is connected and state is known
+}
+
+bool NukiOpenerChannel::isInitialStateFetched() const
+{
+    // Not paired: nothing to wait for.
+    // Paired: wait until handleEvent() fires at least once (Nuki connected & state known).
+    return !_paired || _openerStateInitialized;
 }
 
 void NukiOpenerChannel::initialize(BleScanner::Scanner& scanner)
@@ -51,7 +59,7 @@ void NukiOpenerChannel::loop()
     NukiChannel::loop();
     if (_paired)
     {
-        if (_lastBatteryRequest == 0 || (millis() - _lastBatteryRequest > 6000000 * 24) ) // every 24 hours
+        if (_lastBatteryRequest == 0 || (millis() - _lastBatteryRequest > NUKI_OPENER_BATTERY_CHECK_INTERVAL_MS))
         {
             _lastBatteryRequest = millis();
             logDebugP("Requesting battery status from opener");

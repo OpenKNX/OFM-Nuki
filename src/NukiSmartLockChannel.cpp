@@ -240,9 +240,9 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
 {
     _lastKeyTurnerStateRequest = max(1UL, millis());
     if (_lastNotificationReceivedTimestamp != 0) // Nuki does not notify after a notification happens for some time
-        _retryKeyTurnStateRequestMs = 30000;     // 30 seconds
+        _retryKeyTurnStateRequestMs = NUKI_STATE_RETRY_AFTER_NOTIFICATION_MS;
     else
-        _retryKeyTurnStateRequestMs = 600000 * 12; // 12 hours
+        _retryKeyTurnStateRequestMs = NUKI_STATE_POLL_INTERVAL_MS;
 
     Nuki::CmdResult result = _smartLock.requestKeyTurnerState(&_keyTurnerState);
     if (result == Nuki::CmdResult::Success)
@@ -757,6 +757,13 @@ bool NukiSmartLockChannel::pairDevice()
     return true;
 }
 
+bool NukiSmartLockChannel::isInitialStateFetched() const
+{
+    // Not paired: nothing to wait for.
+    // Paired: wait until requestKeyTurnerState() succeeded at least once.
+    return !_paired || _keyTurnerStateInitialized;
+}
+
 void NukiSmartLockChannel::handleEvent(Nuki::EventType eventType)
 {
     _lastNotificationReceivedTimestamp = max(1UL, millis());
@@ -938,11 +945,11 @@ void NukiSmartLockChannel::lockAction(NukiLock::LockAction action)
 
 void NukiSmartLockChannel::loop1()
 {
-    if (_lastNotificationReceivedTimestamp != 0 && millis() - _lastNotificationReceivedTimestamp > 120000) // Last notification older than 2 minutes, we expect to receive notifications again
+    if (_lastNotificationReceivedTimestamp != 0 && millis() - _lastNotificationReceivedTimestamp > NUKI_NOTIFICATION_TIMEOUT_MS) // Last notification older than timeout, we expect to receive notifications again
     {
         _lastNotificationReceivedTimestamp = 0;
     }
-    if (!_initialized && _paired && (_retryInitialization == 0 || millis() - _retryInitialization > 600000))
+    if (!_initialized && _paired && (_retryInitialization == 0 || millis() - _retryInitialization > NUKI_REINIT_INTERVAL_MS))
     {
         if (!updateConfig())
         {
