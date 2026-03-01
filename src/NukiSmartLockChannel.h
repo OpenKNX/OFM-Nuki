@@ -1,9 +1,10 @@
 #pragma once
+#include "BleScanner.h"
 #include "NukiChannel.h"
 #include "NukiLock.h"
-#include "BleScanner.h"
 
-enum NukiCountDownType {
+enum NukiCountDownType
+{
     NukiCountDownType_NotRunning = 0,
     NukiCountDownType_AutoLock = 1,
     NukiCountDownType_NukiLockNGo = 2,
@@ -24,8 +25,6 @@ class NukiSmartLockChannel : public NukiChannel
     void startLockActionTimer(bool locking, unsigned long waitTimeMs);
     void stopLockActionTimer();
 
-    
-
     NukiLock::NukiLock _smartLock;
     NukiLock::Config _config = {0};
     bool _paired = false;
@@ -38,15 +37,16 @@ class NukiSmartLockChannel : public NukiChannel
     bool _doorOpen = false;
     bool _doorOpenBreak = false;
     bool _isNight = false;
+    unsigned long _lastNightCalcMs = 0; // last calculateIsNight() call — 60 s cache
+    bool _nightCalcCache = false;       // cached result of calculateIsNight()
     bool _checkBurglarAlarm = false;
-    std::string _textState;
+    char _textState[15] = {}; // DPT_String_8859_1 = 14 chars + null; avoids heap allocs
     bool _updateTextState = false;
     long _remaining = 0;
     long _remainingSeconds = 0;
     bool _keyTurnerStateInitialized = false;
     BleScanner::Scanner* _bleScanner = nullptr;
 
- 
     NukiLock::LockAction getCurrentValidConfiguredLockAction();
     void lockAction(NukiLock::LockAction action);
     bool isNightTimeWindow();
@@ -61,8 +61,8 @@ class NukiSmartLockChannel : public NukiChannel
     bool useCountDownKoAndStateText();
     void checkAndStartAutoLock();
     void setLockTimer(NukiCountDownType type, unsigned long waitTime, const char* reason);
-  
-public:
+
+  public:
     NukiSmartLockChannel(uint8_t _channelIndex);
     virtual void initialize(BleScanner::Scanner& scanner) override;
     virtual void setup() override;
@@ -74,7 +74,7 @@ public:
 #endif
     void updateStates(unsigned long now);
     virtual bool pairDevice() override;
-    virtual void processInputKo(GroupObject &ko) override;
+    virtual void processInputKo(GroupObject& ko) override;
     virtual bool processCommand(const std::string cmd, bool diagnoseKo) override;
     virtual void showInformations() override;
     virtual void handleEvent(Nuki::EventType eventType) override;

@@ -3,7 +3,7 @@
 NukiChannel::NukiChannel(uint8_t channelIndex, const char* type) : Channel()
 {
     _channelIndex = channelIndex;
-    _type = type;   
+    _type = type;
     _deviceName = "OpenKNX " + std::to_string(channelIndex + 1);
 }
 
@@ -21,7 +21,6 @@ void NukiChannel::notify(Nuki::EventType eventType)
 
 void NukiChannel::initialize(BleScanner::Scanner& scanner)
 {
-
 }
 
 void NukiChannel::setup()
@@ -32,12 +31,16 @@ void NukiChannel::loop()
 {
     if (_notified)
     {
+        // Capture eventType before clearing the flag.
+        // If notify() fires again between _notified=false and handleEvent(),
+        // the new event is queued correctly for the next loop iteration.
+        Nuki::EventType evt = _eventType;
         _notified = false;
-        handleEvent(_eventType);
+        handleEvent(evt);
     }
 }
 
-void NukiChannel::processInputKo(GroupObject &ko)
+void NukiChannel::processInputKo(GroupObject& ko)
 {
 }
 

@@ -312,6 +312,10 @@ void NukiSmartLockChannel::updateInternalStateFromKeyTurnerState(bool lockNGoTim
             KoNUK_UnLockState.valueCompare((uint8_t)0, DPT_Switch);
             KoNUK_UnlatchState.valueCompare((uint8_t)0, DPT_Switch);
             stopLockActionTimer();
+            // Locked is a stable resting state — immediately reset to the long poll
+            // interval so the 30 s post-notification follow-up window does not trigger
+            // up to 4 unnecessary BLE connections per notification burst.
+            _retryKeyTurnStateRequestMs = NUKI_STATE_POLL_INTERVAL_MS;
             break;
         default: // all other
             KoNUK_UnLockState.valueCompare((uint8_t)0, DPT_Switch);
@@ -595,6 +599,11 @@ NukiLock::LockAction NukiSmartLockChannel::getCurrentValidConfiguredLockAction()
 
 bool NukiSmartLockChannel::calculateIsNight()
 {
+    // Cache result for 60 s — night transitions are minute-scale; calling
+    // openknx.time.getLocalTime() + knx.paramWord() on every loop() frame is wasteful.
+    if (_lastNightCalcMs != 0 && millis() - _lastNightCalcMs < 60000UL)
+        return _nightCalcCache;
+    _lastNightCalcMs = max(1UL, millis());
     // <Enumeration Text="Deaktiviert" Value="0" Id="%ENID%" />
     // <Enumeration Text="Nuki Einstellung" Value="1" Id="%ENID%" />
     // <Enumeration Text="Zeitfenster" Value="2" Id="%ENID%" />
@@ -604,17 +613,25 @@ bool NukiSmartLockChannel::calculateIsNight()
     switch (ParamNUK_CHNightSelection)
     {
         case 0: // disabled
-            return false;
+            _nightCalcCache = false;
+            break;
         case 2:
-            return isNightTimeWindow();
+            _nightCalcCache = isNightTimeWindow();
+            break;
         case 3: // object
-            return KoNUK_NightInput.value(DPT_Switch);
+            _nightCalcCache = (bool)KoNUK_NightInput.value(DPT_Switch);
+            break;
         case 4: // object AND time window
-            return KoNUK_NightInput.value(DPT_Switch) && isNightTimeWindow();
+            _nightCalcCache = (bool)KoNUK_NightInput.value(DPT_Switch) && isNightTimeWindow();
+            break;
         case 5: // object OR time window
-            return KoNUK_NightInput.value(DPT_Switch) || isNightTimeWindow();
+            _nightCalcCache = (bool)KoNUK_NightInput.value(DPT_Switch) || isNightTimeWindow();
+            break;
+        default:
+            _nightCalcCache = false;
+            break;
     }
-    return false;
+    return _nightCalcCache;
 }
 
 bool NukiSmartLockChannel::isNightTimeWindow()
@@ -623,8 +640,13 @@ bool NukiSmartLockChannel::isNightTimeWindow()
     uint16_t currentMinutes = now.hour * 60 + now.minute;
     uint16_t startMinutes = knx.paramWord(NUK_ParamCalcIndex(NUK_CHNightStart));
     uint16_t endMinutes = knx.paramWord(NUK_ParamCalcIndex(NUK_CHNightEnd));
-    bool isNightTimeWindow = (currentMinutes >= startMinutes || currentMinutes < endMinutes);
-    return isNightTimeWindow;
+    if (startMinutes == endMinutes)
+        return false; // zero-width window — always off
+    if (startMinutes < endMinutes)
+        // Non-wrapping window (e.g. 06:00–22:00): inside the range = night
+        return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+    // Midnight-crossing window (e.g. 22:00–06:00): outside the daytime gap = night
+    return currentMinutes >= startMinutes || currentMinutes < endMinutes;
 }
 
 bool NukiSmartLockChannel::processCommand(const std::string cmd, bool diagnoseKo)
@@ -802,89 +824,82 @@ bool NukiSmartLockChannel::useCountDownKoAndStateText()
 
 void NukiSmartLockChannel::updateTextState()
 {
+    // _textState is a 14-char fixed buffer (DPT_String_8859_1 = 14 bytes + null).
+    // snprintf avoids heap allocations — this function is called every second during
+    // active countdowns and would otherwise fragment the heap continuously.
     if (useCountDownKoAndStateText())
     {
-        _textState = "Offen ";
         if (_remainingSeconds >= 60)
         {
-            auto remain = std::to_string((int)(_remainingSeconds + 59) / 60);
+            int minutes = (int)((_remainingSeconds + 59) / 60);
             if (_doorOpenBreak)
-                _textState += std::string(remain.length(), '-');
+                snprintf(_textState, sizeof(_textState), minutes < 10 ? "Offen - min" : "Offen -- min");
             else
-                _textState += remain;
-            _textState += " min";
+                snprintf(_textState, sizeof(_textState), "Offen %d min", minutes);
         }
         else
         {
-            auto remain = std::to_string(_remainingSeconds);
             if (_doorOpenBreak)
-                _textState += std::string(remain.length(), '-');
+                snprintf(_textState, sizeof(_textState), (int)_remainingSeconds < 10 ? "Offen - s" : "Offen -- s");
             else
-                _textState += remain;
-            _textState += " s";
+                snprintf(_textState, sizeof(_textState), "Offen %d s", (int)_remainingSeconds);
         }
     }
     else if (_doorOpen)
-        _textState = "T\xFCr offen";
+        snprintf(_textState, sizeof(_textState), "T\xFCr offen");
     else if (!_smartLock.isPairedWithLock())
-        _textState = "Nicht gekopp.";
+        snprintf(_textState, sizeof(_textState), "Nicht gekopp.");
     else if (!_initialized)
-        _textState = "Init";
+        snprintf(_textState, sizeof(_textState), "Init");
     else if (KoNUK_BurglarAlarm.initialized() && (bool)KoNUK_BurglarAlarm.value(DPT_Switch))
-        _textState = "Einbruchsalarm";
+        snprintf(_textState, sizeof(_textState), "Einbruchsalarm");
     else
     {
         switch (_keyTurnerState.lockState)
         {
             case NukiLock::LockState::Uncalibrated:
-                _textState = "Unkalibriert";
+                snprintf(_textState, sizeof(_textState), "Unkalibriert");
                 break;
             case NukiLock::LockState::Locked:
                 if (_smartLock.isBatteryCritical())
-                {
-                    _textState = "Batterie ";
-                    _textState += std::to_string(_smartLock.getBatteryPerc());
-                    _textState += "%";
-                }
+                    snprintf(_textState, sizeof(_textState), "Batterie %d%%", (int)_smartLock.getBatteryPerc());
                 else
-                    _textState = "Versperrt";
+                    snprintf(_textState, sizeof(_textState), "Versperrt");
                 break;
             case NukiLock::LockState::Unlocking:
-                _textState = "Entsperren";
+                snprintf(_textState, sizeof(_textState), "Entsperren");
                 break;
             case NukiLock::LockState::Unlocked:
-                _textState = "Entsperrt";
+                snprintf(_textState, sizeof(_textState), "Entsperrt");
                 break;
             case NukiLock::LockState::Locking:
-                _textState = "Versperren";
+                snprintf(_textState, sizeof(_textState), "Versperren");
                 break;
             case NukiLock::LockState::Unlatched:
-                _textState = "Lasche gezogen";
+                snprintf(_textState, sizeof(_textState), "Lasche gezogen");
                 break;
             case NukiLock::LockState::UnlockedLnga:
-                _textState = "Lock'n'Go";
+                snprintf(_textState, sizeof(_textState), "Lock'n'Go");
                 break;
             case NukiLock::LockState::Unlatching:
-                _textState = "Lasche ziehen";
+                snprintf(_textState, sizeof(_textState), "Lasche ziehen");
                 break;
             case NukiLock::LockState::Calibration:
-                _textState = "Kalibrierung";
+                snprintf(_textState, sizeof(_textState), "Kalibrierung");
                 break;
             case NukiLock::LockState::BootRun:
-                _textState = "Startvorgang";
+                snprintf(_textState, sizeof(_textState), "Startvorgang");
                 break;
             case NukiLock::LockState::MotorBlocked:
-                _textState = "Blockiert";
+                snprintf(_textState, sizeof(_textState), "Blockiert");
                 break;
             default:
-                _textState = "Unbekannt";
+                snprintf(_textState, sizeof(_textState), "Unbekannt");
                 break;
         }
     }
-    if (KoNUK_StatusText.valueCompare(_textState.c_str(), DPT_String_8859_1))
-    {
-        logDebugP("Status text: %s", _textState.c_str());
-    }
+    if (KoNUK_StatusText.valueCompare(_textState, DPT_String_8859_1))
+        logDebugP("Status text: %s", _textState);
 }
 
 void NukiSmartLockChannel::startLockActionTimer(bool locking, unsigned long actionTimeMs)
@@ -963,7 +978,7 @@ void NukiSmartLockChannel::loop1()
     }
     if (_initialized)
     {
-       
+
         if (_lockAction != NukiLock::LockAction::Undefined || _lastKeyTurnerStateRequest == 0 || (millis() - _lastKeyTurnerStateRequest > _retryKeyTurnStateRequestMs))
         {
             bool alreadyInitialized = _keyTurnerStateInitialized;
@@ -1027,12 +1042,11 @@ void NukiSmartLockChannel::loop1()
                             _unlockedByOFM_Nuki = true;
                         }
                         break;
-                    
                 }
                 if (_lockAction == NukiLock::LockAction::Undefined)
                 {
-                   // We only update the internal state if no lock action is pending, because this will update the state again
-                   updateInternalStateFromKeyTurnerState(alreadyInitialized && !_unlockedByOFM_Nuki);
+                    // We only update the internal state if no lock action is pending, because this will update the state again
+                    updateInternalStateFromKeyTurnerState(alreadyInitialized && !_unlockedByOFM_Nuki);
                 }
             }
         }
@@ -1067,7 +1081,10 @@ void NukiSmartLockChannel::loop1()
                 logErrorP("Pending lock action %d failed after %d retries, giving up", (int)lockAction, maxRetries);
                 _lockAction = NukiLock::LockAction::Undefined;
             }
-            _retryKeyTurnStateRequestMs = 0;
+            // Do NOT set to 0 here — that would trigger an immediate re-poll on every
+            // loop iteration (retry storm). Use the intermediate interval so the next
+            // state request happens after a short but deliberate pause.
+            _retryKeyTurnStateRequestMs = NUKI_STATE_INTERMEDIATE_POLL_MS;
         }
     }
     if (_checkBurglarAlarm)
