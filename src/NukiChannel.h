@@ -70,6 +70,9 @@ class NukiChannel : public OpenKNX::Channel, protected Nuki::SmartlockEventHandl
     virtual void initialize(BleScanner::Scanner& scanner);
     void setup() override;
     void loop() override;
+    // BLE work: called from the OPENKNX_DUALCORE Core-0 task (via loop1()) or from the NUKI_ASYNC_LOOP1 FreeRTOS task directly. 
+    // Framework-independent — no OPENKNX_DUALCORE guard needed here.
+    virtual void loopBle() {}
     virtual void processInputKo(GroupObject& ko) override;
     virtual bool processCommand(const std::string cmd, bool diagnoseKo);
     virtual void showInformations() = 0;

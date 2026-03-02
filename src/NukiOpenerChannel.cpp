@@ -4,14 +4,14 @@
 // <!-- Aufsperren -->
 // <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="%C%: Aufsperren" FunctionText="{{0:-}} Aufsperren" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
 
-#define KoNUK_BatteryEmpty KoNUK_CHKO0 
-#define KoNUK_Unlock KoNUK_CHKO1 
+#define KoNUK_BatteryEmpty KoNUK_CHKO0
+#define KoNUK_Unlock KoNUK_CHKO1
 
 #define NUK_KoBatteryState NUK_KoCHKO0
 #define NUK_KoUnlock NUK_KoCHKO1
 
 NukiOpenerChannel::NukiOpenerChannel(uint8_t _channelIndex) : NukiChannel(_channelIndex, "Opener"),
-  _opener(_deviceName, 2035000 + _channelIndex)
+                                                              _opener(_deviceName, 2035000 + _channelIndex)
 {
 }
 
@@ -33,7 +33,7 @@ bool NukiOpenerChannel::isInitialStateFetched() const
     return !_paired || _openerStateInitialized;
 }
 
-void NukiOpenerChannel::initialize(BleScanner::Scanner& scanner)
+void NukiOpenerChannel::initialize(BleScanner::Scanner &scanner)
 {
     NukiChannel::initialize(scanner);
     //_opener.registerLogger(&nukiLogger);
@@ -57,8 +57,38 @@ void NukiOpenerChannel::initialize(BleScanner::Scanner& scanner)
 void NukiOpenerChannel::loop()
 {
     NukiChannel::loop();
+#if !defined(OPENKNX_DUALCORE) && !defined(NUKI_ASYNC_LOOP1)
+    // Blocking BLE fallback: no dedicated BLE task on this target
+    loopBle();
+#endif
+}
+
+#ifdef OPENKNX_DUALCORE
+void NukiOpenerChannel::loop1()
+{
+    loopBle();
+}
+#endif
+
+/*
+ * processInputKo() runs in KNX main task; loopBle() runs in NukiLoop1.
+ * Calling _opener.lockAction() directly from processInputKo() is a concurrent
+ * BLE call from the wrong task — undefined behaviour in the NimBLE stack.
+ * Instead, set a flag here; loopBle() executes the actual BLE call.
+ */
+void NukiOpenerChannel::loopBle()
+{
     if (_paired)
     {
+        if (_pendingElectricStrike) // _pendingElectricStrike, meaning an unlock command was received via KNX and is pending execution
+        {
+            _pendingElectricStrike = false; // reset flag
+            logInfoP("Executing pending ElectricStrikeActuation");
+            if (_opener.lockAction(NukiOpener::LockAction::ElectricStrikeActuation) == Nuki::CmdResult::Success)
+                logInfoP("ElectricStrikeActuation sent");
+            else
+                logErrorP("ElectricStrikeActuation failed");
+        }
         if (_lastBatteryRequest == 0 || (millis() - _lastBatteryRequest > NUKI_OPENER_BATTERY_CHECK_INTERVAL_MS))
         {
             _lastBatteryRequest = millis();
@@ -68,7 +98,7 @@ void NukiOpenerChannel::loop()
             {
                 logDebugP("Battery status request sent");
                 _openerStateInitialized = true; // first successful BLE contact: initial state known
-                KoNUK_BatteryEmpty.valueCompare((uint8_t) report.criticalBatteryState, DPT_Alarm);
+                KoNUK_BatteryEmpty.valueCompare((uint8_t)report.criticalBatteryState, DPT_Alarm);
             }
             else
             {
@@ -124,15 +154,12 @@ void NukiOpenerChannel::processInputKo(GroupObject &ko)
     switch (NUK_KoCalcIndex(ko.asap()))
     {
         case NUK_KoUnlock:
-        if (ko.value(DPT_Trigger))
-        {
-            logInfoP("Unlock command received via KNX");
-            if (_opener.lockAction(NukiOpener::LockAction::ElectricStrikeActuation) == Nuki::CmdResult::Success)
-                logInfoP("Unlock command sent");
-            else
-                logErrorP("Unlock command failed");
-        }
-        break;
+            if (ko.value(DPT_Trigger))
+            {
+                logInfoP("Unlock command received via KNX, scheduling ElectricStrikeActuation");
+                _pendingElectricStrike = true; // set pending flag; loopBle() will execute the actual BLE call to avoid concurrent BLE calls from the wrong task (undefined behaviour in NimBLE stack)
+            }
+            break;
     }
 }
 

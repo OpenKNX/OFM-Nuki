@@ -1,10 +1,75 @@
 #include "NukiModule.h"
 #include "BleScanner.h"
 #include "NukiConstants.h"
-#include "NukiSmartLockChannel.h"
 #include "NukiOpenerChannel.h"
+#include "NukiSmartLockChannel.h"
+#include "driver/gpio.h"
 
+#ifdef NUKI_ASYNC_LOOP1
 
+#ifndef NUKI_LOOP1_STACK_SIZE
+// 16 KB — BLE operations can be stack-heavy (ECDH + AES-CBC + HMAC). Larger stack needed to avoid overflows.
+#define NUKI_LOOP1_STACK_SIZE 16384
+#endif
+// Static storage: stack in .bss, never on the heap.
+static StackType_t nukiLoop1StackBuffer[NUKI_LOOP1_STACK_SIZE / sizeof(StackType_t)];
+static StaticTask_t nukiLoop1TCB;
+static void nukiModuleLoop1Task(void* param)
+{
+    auto* mod = static_cast<NukiModule*>(param);
+    for (;;)
+    {
+        // Iterate all channels and call loopBle() on each NukiChannel.
+        // loopBle() is framework-independent (runs on single-core and dual-core targets)
+        // and is the only place where BLE work is done in NukiModule and its channels.
+        uint8_t n = mod->getNumberOfChannels();
+        for (uint8_t i = 0; i < n; i++)
+        {
+            auto* ch = static_cast<NukiChannel*>(mod->getChannel(i));
+            if (ch != nullptr)
+                ch->loopBle();
+        }
+
+        // Check if BLE scan duty cycle switch is requested by any channel (e.g. after initial state fetch).
+        if (mod->_requestLowPowerScan)
+        {
+            mod->_requestLowPowerScan = false;
+            auto bleScan = NimBLEDevice::getScan();
+            if (bleScan != nullptr)
+            {
+                bleScan->setInterval(BLE_SCAN_INTERVAL_LP);
+                bleScan->setWindow(BLE_SCAN_WINDOW_LP);
+                printf("[NukiLP] BLE scan switched to low-power (%d/%d)\n",
+                       BLE_SCAN_INTERVAL_LP, BLE_SCAN_WINDOW_LP);
+            }
+        }
+#ifdef OPENKNX_DEBUG
+        uint32_t iteration = 0;
+        if (++iteration % 2000 == 0)
+        {
+            UBaseType_t hwm = uxTaskGetStackHighWaterMark(NULL);
+            printf("[NukiHWM] NukiLoop1 stack: %u bytes free (configured=%d)\n",
+                   (unsigned)hwm * sizeof(StackType_t), NUKI_LOOP1_STACK_SIZE);
+            TaskHandle_t nimbleTask = xTaskGetHandle("nimble_host");
+            if (nimbleTask != nullptr)
+            {
+                UBaseType_t nHwm = uxTaskGetStackHighWaterMark(nimbleTask);
+                printf("[NukiHWM] NimBLE host stack: %u bytes free (configured=%d)\n",
+                       (unsigned)nHwm * sizeof(StackType_t),
+                       CONFIG_BT_NIMBLE_HOST_TASK_STACK_SIZE);
+            }
+            else
+            {
+                printf("[NukiHWM] NimBLE host task not found by name 'nimble_host'\n");
+            }
+            fflush(stdout);
+        }
+        ++iteration;
+#endif
+        vTaskDelay(1); // yield — allows KNX main loop to run between BLE ops
+    }
+}
+#endif
 
 const std::string NukiModule::name()
 {
@@ -44,12 +109,40 @@ const std::string NukiModule::version()
 
 void NukiModule::setup()
 {
+#ifdef OKNXHW_OPENKNXIAO_ESP32C6
+    // XIAO ESP32-C6: FM8625H SP2T RF switch — pins from Xiao.h:
+    //   OKNXHW_OPENKNXIAO_RF_POWER_PIN  (GPIO3)  LOW=switch ON,  HIGH=switch OFF
+    //   OKNXHW_OPENKNXIAO_RF_SWITCH_PIN (GPIO14) LOW=internal PCB antenna, HIGH=external u.FL
+    // Sequence: always power ON first, then select antenna.
+    // Default: internal PCB antenna. Add -D NUKI_BLE_ANTENNA_EXTERNAL for external u.FL.
+    // ToDo: OKNXHW_OPENKNXIAO_ESP32C6 interferences with KNX RX lane and NCN5130 EMI resets -> 0x17 bytes
+    //       100 pF Capacitator from KNX_RX-Pin to GND on NanoBCU.
+    gpio_reset_pin((gpio_num_t)OKNXHW_OPENKNXIAO_RF_POWER_PIN);
+    gpio_set_direction((gpio_num_t)OKNXHW_OPENKNXIAO_RF_POWER_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level((gpio_num_t)OKNXHW_OPENKNXIAO_RF_POWER_PIN, 0); // switch power ON
+#ifdef NUKI_BLE_ANTENNA_EXTERNAL
+    const int _antSelect = 1; // RF2: Using external u.FL antenna
+#else
+    const int _antSelect = 0; // RF1: Using internal Ceramic PCB antenna
+#endif
+    gpio_reset_pin((gpio_num_t)OKNXHW_OPENKNXIAO_RF_SWITCH_PIN);
+    gpio_set_direction((gpio_num_t)OKNXHW_OPENKNXIAO_RF_SWITCH_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level((gpio_num_t)OKNXHW_OPENKNXIAO_RF_SWITCH_PIN, _antSelect);
+    logInfoP("OPENKNXIAO ESP32-C6 RF switch: power=GPIO%d(ON), select=GPIO%d=%d (%s antenna)",
+             OKNXHW_OPENKNXIAO_RF_POWER_PIN, OKNXHW_OPENKNXIAO_RF_SWITCH_PIN,
+             _antSelect, _antSelect ? "external u.FL" : "internal Ceramic PCB");
+#endif
     NUKChannelOwnerModule::initialize(ParamNUK_VisibleChannels);
     NUKChannelOwnerModule::setup();
 
-    // Defer BLE scanner initialization to loop() to let the supply voltage settle after
-    // boot before the BLE stack draws its startup current peak.
-    // Triggered channels exist but are not yet connected to the scanner.
+#ifdef NUKI_ASYNC_LOOP1
+    xTaskCreateStatic(nukiModuleLoop1Task, "NukiLoop1",
+                      NUKI_LOOP1_STACK_SIZE, // bytes (ESP-IDF FreeRTOS uses bytes)
+                      this, 1,
+                      nukiLoop1StackBuffer, &nukiLoop1TCB);
+    logInfoP("All %d channel(s) loop1 running as single FreeRTOS task (stack=%d bytes, static .bss)",
+             (int)getNumberOfChannels(), NUKI_LOOP1_STACK_SIZE);
+#endif
     _bleInitDeadline = millis() + BLE_INIT_DELAY_MS;
     logDebugP("BLE scanner start deferred by %dms for supply stabilization", BLE_INIT_DELAY_MS);
 }
@@ -60,7 +153,7 @@ void NukiModule::initializeBleScanner()
     // reboot — no explicit clear needed. Each channel's initialize() adds its paired address.
     for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
     {
-        auto channel = (NukiChannel*) getChannel(i);
+        auto channel = (NukiChannel*)getChannel(i);
         if (channel == nullptr)
             continue;
         if (scanner == nullptr)
@@ -71,6 +164,13 @@ void NukiModule::initializeBleScanner()
             // Switches to 30% in loop() once all paired channels have fetched their
             // state, or after 60s fallback (Nuki out of range / battery dead).
             scanner->initialize("blescanner", true, BLE_SCAN_INTERVAL_BOOT, BLE_SCAN_WINDOW_BOOT);
+#ifdef NUKI_BLE_TX_POWER_DBM
+            // Reduce BLE TX power after NimBLEDevice::init() to limit RF emissions
+            if (NimBLEDevice::setPower(NUKI_BLE_TX_POWER_DBM))
+                logInfoP("BLE TX power set to %d dBm (EMI reduction, default was +9 dBm)", (int)NUKI_BLE_TX_POWER_DBM);
+            else
+                logErrorP("BLE TX power set to %d dBm FAILED", (int)NUKI_BLE_TX_POWER_DBM);
+#endif
             _initialStateFetchDeadline = millis() + BLE_INITIAL_STATE_TIMEOUT_MS;
         }
         logDebugP("Initialize channel %d", i);
@@ -108,7 +208,7 @@ void NukiModule::loop()
         bool allFetched = true;
         for (uint8_t i = 0; i < getNumberOfUsedChannels(); i++)
         {
-            auto ch = (NukiChannel*) getChannel(i);
+            auto ch = (NukiChannel*)getChannel(i);
             if (ch != nullptr && !ch->isInitialStateFetched())
             {
                 allFetched = false;
@@ -119,33 +219,40 @@ void NukiModule::loop()
         {
             _initialStateFetchDeadline = 0;
             if (allFetched)
+            {
                 logDebugP("All channels ready — switching BLE scan to low-power mode (30%% duty)");
+            }
             else
+            {
                 logDebugP("Initial state timeout — switching BLE scan to low-power mode (30%% duty)");
-            auto bleScan = NimBLEDevice::getScan();
-            bleScan->setInterval(BLE_SCAN_INTERVAL_LP); // default 100ms
-            bleScan->setWindow(BLE_SCAN_WINDOW_LP);     // default 30ms → 30% duty cycle
+            }
+            _requestLowPowerScan = true;
         }
     }
     if (scanner != nullptr)
+    {
         scanner->update();
-   
+    }
     NUKChannelOwnerModule::loop();
 }
 
-bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId, uint8_t length, uint8_t *data, uint8_t *resultData, uint8_t &resultLength)
+bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId, uint8_t length, uint8_t* data, uint8_t* resultData, uint8_t& resultLength)
 {
-    if (!knx.configured()) return false;
-    if (objectIndex != 160) return false;
-    if (propertyId != 9) return false;
-    if (length < 1) return false;
- 
+    if (!knx.configured())
+        return false;
+    if (objectIndex != 160) // arbitrary, must match the object index used in the ETS script for function property commands
+        return false;
+    if (propertyId != 9) // arbitrary, must match the property ID used in the ETS script for function property commands
+        return false;
+    if (length < 1) // at least 1 byte needed for command ID
+        return false;
+
     logHexTraceP(data, length);
     auto cmd = data[0];
 
     switch (cmd)
     {
-        case 1:
+        case 1: // pair command
         {
             if (length != 2)
                 return false;
@@ -157,7 +264,7 @@ bool NukiModule::processFunctionProperty(uint8_t objectIndex, uint8_t propertyId
                 resultLength = 1;
                 return true;
             }
-            auto channel = (NukiChannel*) getChannel(channelIndex);
+            auto channel = (NukiChannel*)getChannel(channelIndex); // channelIndex is 0-based, ETS script uses 1-based indexing — adjust accordingly
             if (channel == nullptr)
             {
                 logErrorP("Channel %d disabled", channelIndex + 1);
@@ -188,20 +295,20 @@ OpenKNX::Channel* NukiModule::createChannel(uint8_t _channelIndex /* this parame
     // <Enumeration Text="Opener" Value="2" Id="%ENID%" />
     switch (ParamNUK_CHChannelType)
     {
-        case 0:
-        logInfoP("Channel %d disabled", _channelIndex);
-        break;
-    case 1:
-        logInfoP("Channel %d Smart Lock creating", _channelIndex);
-        channel = new NukiSmartLockChannel(_channelIndex);
-        break;
-    case 2:
-        logInfoP("Channel %d Opener creating", _channelIndex);
-        channel = new NukiOpenerChannel(_channelIndex);
-        break;
-    default:
-        logErrorP("Channel %d not implemented", _channelIndex);
-        break;
+        case 0: // disabled
+            logInfoP("Channel %d disabled", _channelIndex);
+            break;
+        case 1: // Smart Lock
+            logInfoP("Channel %d Smart Lock creating", _channelIndex);
+            channel = new NukiSmartLockChannel(_channelIndex);
+            break;
+        case 2: // Opener
+            logInfoP("Channel %d Opener creating", _channelIndex);
+            channel = new NukiOpenerChannel(_channelIndex);
+            break;
+        default:
+            logErrorP("Channel %d not implemented", _channelIndex);
+            break;
     }
     return channel;
 }
@@ -249,14 +356,14 @@ bool NukiModule::processCommand(const std::string cmd, bool diagnoseKo)
                 logErrorP("Invalid channel index %s", subCmd.c_str());
                 return true;
             }
-            subCmd = "";    
+            subCmd = "";
         }
         if (channelIndex < 1 || channelIndex > getNumberOfChannels())
         {
             logInfoP("Channel %d not available", channelIndex);
             return true;
         }
-        auto channel = (NukiChannel*) getChannel(channelIndex - 1);
+        auto channel = (NukiChannel*)getChannel(channelIndex - 1);
         if (channel == nullptr)
         {
             logErrorP("Channel %d not found", channelIndex);

@@ -40,8 +40,8 @@
   #define BLE_SCAN_WINDOW_LP 48
 #endif
 
-#if !defined(OPENKNX_DUALCORE)
-#warning "It is strongly recommended to enable OPENKNX_DUALCORE for NukiModule"
+#if !defined(OPENKNX_DUALCORE) && !defined(NUKI_ASYNC_LOOP1)
+#warning "It is strongly recommended to enable OPENKNX_DUALCORE for NukiModule (or NUKI_ASYNC_LOOP1 for single-core targets)"
 #endif
 
 namespace BleScanner {
@@ -57,6 +57,7 @@ class NukiModule : public NUKChannelOwnerModule
     void initializeBleScanner();
     
   public:
+    volatile bool _requestLowPowerScan = false; // set by channels to request switching to low-power BLE scan mode (30% duty cycle)
     const std::string name() override;
     const std::string version() override;
     virtual OpenKNX::Channel* createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */) override; 

@@ -157,13 +157,20 @@ void NukiSmartLockChannel::showInformations()
         {
             logInfoP("Product Variant: %d", _config.productVariant);
         }
-        if (_keyTurnerState.nukiState != NukiLock::State::Uninitialized)
+
+        NukiLock::KeyTurnerState ktsSnap; // local snapshot variable to read the volatile _keyTurnerState under spinlock and log outside the critical section
+
+        portENTER_CRITICAL(&_kts_spinlock); // acquire spinlock to read _keyTurnerState safely
+        ktsSnap = _keyTurnerState;          // copy the volatile _keyTurnerState into a local variable under the protection of the spinlock to ensure we have a consistent snapshot of the state for logging
+        portEXIT_CRITICAL(&_kts_spinlock);  // release spinlock after reading _keyTurnerState
+
+        if (ktsSnap.nukiState != NukiLock::State::Uninitialized)
         {
-            logInfoP("Lock State: %d", (int)_keyTurnerState.lockState);
-            logInfoP("Last Action: %d", (int)_keyTurnerState.lastLockAction);
-            logInfoP("Last Action Trigger: %d", (int)_keyTurnerState.lastLockActionTrigger);
-            logInfoP("Last Action Status: %d", (int)_keyTurnerState.lastLockActionCompletionStatus);
-            logInfoP("Door Sensor State: %d", (int)_keyTurnerState.doorSensorState);
+            logInfoP("Lock State: %d", (int)ktsSnap.lockState);
+            logInfoP("Last Action: %d", (int)ktsSnap.lastLockAction);
+            logInfoP("Last Action Trigger: %d", (int)ktsSnap.lastLockActionTrigger);
+            logInfoP("Last Action Status: %d", (int)ktsSnap.lastLockActionCompletionStatus);
+            logInfoP("Door Sensor State: %d", (int)ktsSnap.doorSensorState);
             logInfoP("Battery Percentage: %d", _smartLock.getBatteryPerc());
         }
         else
@@ -244,9 +251,14 @@ bool NukiSmartLockChannel::updateKeyTurnerState()
     else
         _retryKeyTurnStateRequestMs = NUKI_STATE_POLL_INTERVAL_MS;
 
-    Nuki::CmdResult result = _smartLock.requestKeyTurnerState(&_keyTurnerState);
+    NukiLock::KeyTurnerState tmp{};                                  // temporary variable to read the key turner state into before copying it into the volatile _keyTurnerState under spinlock protection
+    Nuki::CmdResult result = _smartLock.requestKeyTurnerState(&tmp); // request the key turner state from the Nuki Smart Lock and store the result in a temporary variable
     if (result == Nuki::CmdResult::Success)
     {
+        // To avoid holding the spinlock for the entire duration of the logging calls, we first read the key turner state into a temporary variable and then copy it into the volatile _keyTurnerState under the protection of the spinlock. This way, we minimize the time we hold the spinlock and reduce contention with other parts of the code that may need to read _keyTurnerState.
+        portENTER_CRITICAL(&_kts_spinlock); // acquire spinlock to update the volatile _keyTurnerState safely
+        _keyTurnerState = tmp;
+        portEXIT_CRITICAL(&_kts_spinlock); // release spinlock after updating
         _keyTurnerStateInitialized = true;
         _retryRequestKeyTurnerState = 0;
         logInfoP("Lock state: %d (%s)", _keyTurnerState.lockState, lockStateToString(_keyTurnerState.lockState));
@@ -960,7 +972,7 @@ void NukiSmartLockChannel::lockAction(NukiLock::LockAction action)
     _lockAction = action;
 }
 
-void NukiSmartLockChannel::loop1()
+void NukiSmartLockChannel::loopBle()
 {
     if (_lastNotificationReceivedTimestamp != 0 && millis() - _lastNotificationReceivedTimestamp > NUKI_NOTIFICATION_TIMEOUT_MS) // Last notification older than timeout, we expect to receive notifications again
     {
@@ -1057,6 +1069,7 @@ void NukiSmartLockChannel::loop1()
             auto lockAction = _lockAction;
             for (int i = 0; i < maxRetries; i++)
             {
+                unsigned long notifBefore = _lastNotificationReceivedTimestamp; // snapshot to detect notifications received during the BLE call
                 if (_smartLock.lockAction(lockAction) == Nuki::CmdResult::Success)
                 {
                     if (lockAction == NukiLock::LockAction::Unlock ||
@@ -1067,23 +1080,52 @@ void NukiSmartLockChannel::loop1()
                         _unlockedByOFM_Nuki = true;
                     }
                     logInfoP("Pending lock action %d sent", (int)lockAction);
-                    _lockAction = NukiLock::LockAction::Undefined;
+                    if (_lockAction == lockAction) // compare-and-clear: only reset if no new command was written by the KNX main task during the blocking call
+                    {
+                        _lockAction = NukiLock::LockAction::Undefined;
+                    }
                     lockAction = NukiLock::LockAction::Undefined;
                     break;
                 }
                 else
                 {
-                    logErrorP("Pending lock action %d failed", (int)lockAction);
+                    // Failure can be caused by temporary BLE issues, so we retry a few times before giving up.
+                    // Receive a notification during retries, this is a strong indication that the command
+                    // actually reached the lock and changed its state.
+                    // We break out the retry loop immediately to re-poll the state and avoid unnecessary retries.
+                    logErrorP("Pending lock action %d failed (attempt %d/%d)", (int)lockAction, i + 1, maxRetries);
+                    if (_lastNotificationReceivedTimestamp != notifBefore)
+                    {
+                        logInfoP("Pending lock action %d: notification received during attempt — command reached lock, re-polling state",
+                                 (int)lockAction);
+                        if (lockAction == NukiLock::LockAction::Unlock ||
+                            lockAction == NukiLock::LockAction::LockNgo ||
+                            lockAction == NukiLock::LockAction::LockNgoUnlatch ||
+                            lockAction == NukiLock::LockAction::Unlatch)
+                            _unlockedByOFM_Nuki = true;
+
+                        if (_lockAction == lockAction) // compare-and-clear: only reset if no new command was written by the KNX main task during the blocking call
+                        {
+                            _lockAction = NukiLock::LockAction::Undefined;
+                        }
+                        lockAction = NukiLock::LockAction::Undefined;
+                        break;
+                    }
+                    // No notification received, we assume the command did not reach the lock and
+                    // retry after a short delay.
+                    // if (i + 1 < maxRetries)
+                    //    vTaskDelay(pdMS_TO_TICKS(500));
                 }
             }
             if (lockAction != NukiLock::LockAction::Undefined)
             {
                 logErrorP("Pending lock action %d failed after %d retries, giving up", (int)lockAction, maxRetries);
-                _lockAction = NukiLock::LockAction::Undefined;
+                if (_lockAction == lockAction) // compare-and-clear: only reset if no new command was written by the KNX main task during the blocking calls
+                {
+                    _lockAction = NukiLock::LockAction::Undefined;
+                }
             }
-            // Do NOT set to 0 here — that would trigger an immediate re-poll on every
-            // loop iteration (retry storm). Use the intermediate interval so the next
-            // state request happens after a short but deliberate pause.
+            // After processing a lock action, we re-poll the state after a short delay to update the internal state and KNX objects.
             _retryKeyTurnStateRequestMs = NUKI_STATE_INTERMEDIATE_POLL_MS;
         }
     }
@@ -1114,10 +1156,19 @@ void NukiSmartLockChannel::loop1()
     }
 }
 
+#ifdef OPENKNX_DUALCORE
+// On dual-core hardware loop1() runs on Core 0 — delegate to loopBle().
+void NukiSmartLockChannel::loop1()
+{
+    loopBle();
+}
+#endif
+
 void NukiSmartLockChannel::loop()
 {
-#ifndef OPENKNX_DUALCORE
-    loop1();
+#if !defined(OPENKNX_DUALCORE) && !defined(NUKI_ASYNC_LOOP1)
+    // Blocking BLE fallback: no dedicated BLE task on this target
+    loopBle();
 #endif
     NukiChannel::loop();
     if (_updateTextState)

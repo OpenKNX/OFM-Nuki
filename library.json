@@ -25,10 +25,6 @@
         {
              "name": "BleScanner",
              "version": "https://github.com/mgeramb/BleScanner#ca286d1cef0638ead12b379a5b14766dc59dff1d"
-        },
-        {
-            "name": "NukiBleEsp32",
-            "version": "https://github.com/I-Connect/NukiBleEsp32#e2edfa2cb4a36f7b3bf2f160f1b20fb075996ab7"
         }
     ]
 }
