@@ -271,7 +271,7 @@
 
               <!-- *** Nuki Openener *** -->
               <!-- Batterie leer -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Bit" DatapointType="DPST-5-5" Text="{{0:Nuki %C%}}: Batterie" FunctionText="Nuki %C%: Ausgang, Status, Ok=0, Kritisch=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" ObjectSize="1 Byte" DatapointType="DPST-5-5" Text="{{0:Nuki %C%}}: Batterie" FunctionText="Nuki %C%: Ausgang, Status, Ok=0, Kritisch=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" ReadFlag="Enabled" TransmitFlag="Enabled" />
               <!-- Aufsperren -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" ObjectSize="1 Bit" DatapointType="DPST-1-17" Text="{{0:Nuki %C%}}: Entriegeln" FunctionText="Nuki %C%: Eingang, Auslöser, Entriegeln=1" TextParameterRefId="%AID%_P-%TT%%CC%000_R-%TT%%CC%00000" WriteFlag="Enabled" />
        
