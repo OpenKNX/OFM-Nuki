@@ -9,6 +9,12 @@
   #define BLE_INIT_DELAY_MS 3000
 #endif
 
+// Delay in ms after BLE initialization before channel initialization.
+// Override via build flag: -D CHANNEL_INIT_DELAY_MS=5000
+#ifndef CHANNEL_INIT_DELAY_MS
+  #define CHANNEL_INIT_DELAY_MS 3000
+#endif
+
 // Timeout in ms after BLE init to wait for all paired channels to fetch their initial
 // state before switching to low-power scan mode (30% duty cycle).
 // Increase if Nuki is far away or slow to respond. Override: -D BLE_INITIAL_STATE_TIMEOUT_MS=120000
@@ -34,11 +40,13 @@
 // Saves ~70% BLE radio power vs 100% duty cycle.
 // Override: -D BLE_SCAN_INTERVAL_LP=160  -D BLE_SCAN_WINDOW_LP=48
 #ifndef BLE_SCAN_INTERVAL_LP
-  #define BLE_SCAN_INTERVAL_LP 160
+   // this setting is losing advertises -> commented out for now, needs further investigation
+   // #define BLE_SCAN_INTERVAL_LP 160
 #endif
 #ifndef BLE_SCAN_WINDOW_LP
-  #define BLE_SCAN_WINDOW_LP 48
-#endif
+  // this setting is losing advertises -> commented out for now, needs further investigation
+   // #define BLE_SCAN_WINDOW_LP 48
+ #endif
 
 #if !defined(OPENKNX_DUALCORE)
 #warning "It is strongly recommended to enable OPENKNX_DUALCORE for NukiModule"
@@ -53,8 +61,10 @@ class NukiModule : public NUKChannelOwnerModule
   private:
     BleScanner::Scanner* scanner = nullptr;
     unsigned long _bleInitDeadline = 0;          // deferred BLE startup: millis() target after boot stabilization
+    unsigned long _channelInitDeadline = 0;      // deadline for channel initialization
     unsigned long _initialStateFetchDeadline = 0; // deadline for switching to low-power BLE scan (set after BLE init)
     void initializeBleScanner();
+    void initializeChannels();
     
   public:
     const std::string name() override;
