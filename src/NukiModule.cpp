@@ -146,7 +146,9 @@ void NukiModule::loop()
                 logDebugP("All channels ready — switching BLE scan to low-power mode (30%% duty)");
             else
                 logDebugP("Initial state timeout — switching BLE scan to low-power mode (30%% duty)");
-            auto bleScan = NimBLEDevice::getScan();
+            #if defined(BLE_SCAN_INTERVAL_LP) || defined(BLE_SCAN_WINDOW_LP)
+                auto bleScan = NimBLEDevice::getScan();
+            #endif
             #ifdef BLE_SCAN_INTERVAL_LP
                 bleScan->setInterval(BLE_SCAN_INTERVAL_LP); // default 100ms
             #endif
